@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart Quantity Stepper Test</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <h1 class="page__title">Your Cart</h1>
+
+    <div class="cart-item">
+      <div class="cart-item__info">
+        <p class="cart-item__name">Organic Cotton Onesie</p>
+        <p class="cart-item__unit-price">$12.00 each</p>
+      </div>
+
+      <div class="cart-item__stepper">
+        <button class="cart-item__stepper-btn" id="decreaseBtn" aria-label="Decrease quantity">-</button>
+        <input class="cart-item__stepper-input" id="quantityInput" type="text" value="1" inputmode="numeric">
+        <button class="cart-item__stepper-btn" id="increaseBtn" aria-label="Increase quantity">+</button>
+      </div>
+    </div>
+
+    <p class="cart-item__total" id="totalDisplay">Total: $12.00</p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

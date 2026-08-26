@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Variant Selector Test</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <h1 class="page__title">Kids' Cotton T-Shirt</h1>
+
+    <div class="variant-selector" id="variantSelector">
+      <div class="variant-selector__group">
+        <span class="variant-selector__label">Color</span>
+        <div class="variant-selector__options" id="colorOptions"></div>
+      </div>
+      <div class="variant-selector__group">
+        <span class="variant-selector__label">Size</span>
+        <div class="variant-selector__options" id="sizeOptions"></div>
+      </div>
+
+      <p class="variant-selector__price" id="price"></p>
+      <p class="variant-selector__stock" id="stockMsg"></p>
+
+      <button class="variant-selector__add-to-cart" id="addToCartBtn">Add to cart</button>
+      <p class="variant-selector__cart-msg" id="cartMsg"></p>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Carousel Test</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <h1 class="page__title">Product Gallery</h1>
+
+    <div class="carousel" id="carousel">
+      <div class="carousel__track" id="carouselTrack"></div>
+      <button class="carousel__arrow carousel__arrow--prev" id="prevBtn" aria-label="Previous image">&#8249;</button>
+      <button class="carousel__arrow carousel__arrow--next" id="nextBtn" aria-label="Next image">&#8250;</button>
+      <div class="carousel__dots" id="carouselDots"></div>
+    </div>
+
+    <button class="page__destroy-btn" id="destroyBtn">Destroy carousel (simulates navigating away)</button>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

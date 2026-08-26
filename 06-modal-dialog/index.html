@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modal Dialog Test</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <span class="site-header__logo">Solis Store</span>
+  </header>
+
+  <main class="page">
+    <h1 class="page__title">Newsletter</h1>
+    <p>Stay in the loop — subscribe to our newsletter for early access to new drops, restocks, and exclusive member-only promotions.</p>
+    <button class="page__open-btn" id="openModalBtn">Open Signup Modal</button>
+    <div style="height: 400px;"></div>
+  </main>
+
+  <div class="modal" id="modal" hidden>
+    <div class="modal__overlay"></div>
+    <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="modal__close" id="closeModalBtn" aria-label="Close">&times;</button>
+      <h2 class="modal__title" id="modalTitle">Join our newsletter</h2>
+      <p class="modal__text">Get 10% off your first order.</p>
+      <div class="modal__terms">
+        <p>By subscribing, you agree to receive marketing emails about new arrivals, restocks, and seasonal promotions from Solis Store.</p>
+        <p>You can unsubscribe at any time using the link at the bottom of any email we send you. We typically send 2-4 emails per month.</p>
+        <p>We do not sell or share your email address with third parties for their own marketing purposes.</p>
+        <p>Your first-order discount code will be sent immediately after you confirm your subscription, and is valid for 30 days from the date it's issued.</p>
+        <p>Discount codes cannot be combined with other offers and are not valid on gift cards or final-sale items.</p>
+      </div>
+      <input class="modal__input" type="email" placeholder="you@example.com">
+      <button class="modal__submit">Subscribe</button>
+      <a class="modal__link" href="#">Terms &amp; Conditions</a>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

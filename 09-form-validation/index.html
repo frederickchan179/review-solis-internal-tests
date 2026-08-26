@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout Form Test</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <h1 class="page__title">Checkout</h1>
+
+    <form class="checkout-form" id="checkoutForm" novalidate>
+      <div class="checkout-form__field">
+        <label class="checkout-form__label" for="nameInput">Full name</label>
+        <input class="checkout-form__input" id="nameInput" type="text">
+      </div>
+
+      <div class="checkout-form__field">
+        <label class="checkout-form__label" for="emailInput">Email</label>
+        <input class="checkout-form__input" id="emailInput" type="text">
+      </div>
+
+      <div class="checkout-form__field">
+        <label class="checkout-form__label" for="noteInput">Order notes (optional)</label>
+        <textarea class="checkout-form__input" id="noteInput" rows="3"></textarea>
+      </div>
+
+      <button class="checkout-form__submit" id="submitBtn" type="submit">Place order</button>
+    </form>
+
+    <div class="checkout-form__summary" id="summary"></div>
+    <p class="checkout-form__order-count" id="orderCount">Orders placed: 0</p>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
