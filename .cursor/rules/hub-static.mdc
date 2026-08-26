@@ -23,7 +23,7 @@ npm run build      # AGENT.md prompts + exercises/manifest.json
 
 After adding, renaming, or removing an exercise folder (or changing which files it contains), run `npm run build` and commit the updated `manifest.json` (and regenerated `AGENT.md` files).
 
-After editing `REVIEW.md`, run `npm run build:agent` (or full `npm run build`) so `AGENT.md` prompts stay in sync.
+After editing `REVIEW.md`, run `npm run build:agent` (or full `npm run build`) so `AGENT.md` and `exercises/AGENTS.md` stay in sync.
 
 Editing fixture source alone does not require a manifest rebuild unless file names changed.
 

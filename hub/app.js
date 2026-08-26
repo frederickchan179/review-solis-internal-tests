@@ -2,6 +2,8 @@ import { marked } from "https://cdn.jsdelivr.net/npm/marked@15.0.7/+esm";
 import hljs from "https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/+esm";
 
 const MANIFEST_URL = new URL("../exercises/manifest.json", import.meta.url);
+const AGENTS_URL = new URL("../exercises/AGENTS.md", import.meta.url);
+const AGENTS_HASH = "agents";
 const VIEWPORT_KEY = "solis-review-viewport";
 const REVIEW_W_KEY = "solis-review-width";
 const REVIEW_W_DEFAULT = 420;
@@ -37,6 +39,8 @@ const els = {
   viewportTabs: document.getElementById("viewport-tabs"),
   viewportSize: document.getElementById("viewport-size"),
   splitter: document.getElementById("review-splitter"),
+  openAgents: document.getElementById("open-agents"),
+  openAgentsSide: document.getElementById("open-agents-side"),
 };
 
 marked.setOptions({
@@ -365,12 +369,65 @@ async function loadSourcePanel(exercise) {
   }
 }
 
+function clearNavCurrent() {
+  els.nav.querySelectorAll("a").forEach((a) => {
+    a.setAttribute("aria-current", "false");
+  });
+}
+
+function markAgentsNav(active) {
+  [els.openAgents, els.openAgentsSide].forEach((link) => {
+    if (!link) return;
+    link.setAttribute("aria-current", active ? "page" : "false");
+  });
+}
+
+async function openAgentsBundle({ pushHash = true } = {}) {
+  currentId = AGENTS_HASH;
+  currentFiles = [];
+  currentFile = null;
+  if (pushHash) setHash(AGENTS_HASH);
+
+  clearNavCurrent();
+  markAgentsNav(true);
+  els.app.classList.add("agents-mode");
+
+  els.stageTitle.textContent = "All agent prompts";
+  els.stagePath.textContent = "exercises/AGENTS.md";
+  els.openTab.href = AGENTS_URL.href;
+  els.frame.removeAttribute("src");
+  els.fileList.innerHTML = "";
+  els.sourceBody.className = "source-body loading";
+  els.sourceBody.textContent = "Loading…";
+
+  try {
+    const res = await fetch(AGENTS_URL, { cache: "no-store" });
+    if (!res.ok) throw new Error(`${res.status}`);
+    const text = await res.text();
+    els.sourceBody.className = "source-body md";
+    els.sourceBody.innerHTML = marked.parse(text);
+    enhanceCopyableCodeBlocks(els.sourceBody);
+  } catch (err) {
+    els.sourceBody.className = "source-body error";
+    els.sourceBody.textContent = "Could not open exercises/AGENTS.md.";
+    console.error(err);
+  }
+}
+
 function selectExercise(id, { pushHash = true } = {}) {
+  if (id === AGENTS_HASH) {
+    void openAgentsBundle({ pushHash });
+    return;
+  }
+
   const exercise = exercises.find((item) => item.id === id) || exercises[0];
   if (!exercise) return;
 
   currentId = exercise.id;
   if (pushHash) setHash(exercise.id);
+
+  els.app.classList.remove("agents-mode");
+  markAgentsNav(false);
 
   els.nav.querySelectorAll("a").forEach((a) => {
     a.setAttribute(
@@ -437,7 +494,12 @@ els.viewportTabs.addEventListener("click", (event) => {
 
 window.addEventListener("hashchange", () => {
   const id = parseHash();
-  if (id && id !== currentId) selectExercise(id, { pushHash: false });
+  if (!id || id === currentId) return;
+  if (id === AGENTS_HASH) {
+    void openAgentsBundle({ pushHash: false });
+    return;
+  }
+  selectExercise(id, { pushHash: false });
 });
 
 async function boot() {
@@ -448,6 +510,11 @@ async function boot() {
   await refreshExercises();
 
   const fromHash = parseHash();
+  if (fromHash === AGENTS_HASH) {
+    await openAgentsBundle({ pushHash: false });
+    return;
+  }
+
   const start =
     exercises.find((item) => item.id === fromHash)?.id || exercises[0]?.id;
   if (start) selectExercise(start, { pushHash: !fromHash });

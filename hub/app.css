@@ -162,6 +162,68 @@ button {
   color: var(--topbar-muted);
 }
 
+.topbar-link {
+  flex: 0 0 auto;
+  color: var(--topbar-text);
+  opacity: 0.85;
+}
+
+.topbar-link:hover,
+.topbar-link[aria-current="page"] {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.sidebar-foot {
+  padding: 0.65rem 0.75rem;
+  border-top: 1px solid var(--line);
+}
+
+.btn-agents {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--accent-ink);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.btn-agents:hover {
+  background: var(--accent-soft);
+}
+
+.btn-agents[aria-current="page"] {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.app.agents-mode {
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+}
+
+.app.agents-mode .stage,
+.app.agents-mode .splitter {
+  display: none;
+}
+
+.app.agents-mode .source-panel {
+  grid-column: 2;
+}
+
+.app.agents-mode .source-layout,
+.app.agents-mode .file-list {
+  display: none;
+}
+
+.app.agents-mode .source-body {
+  flex: 1;
+}
+
 .sidebar,
 .source-panel {
   display: flex;
