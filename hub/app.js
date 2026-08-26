@@ -92,6 +92,55 @@ function decoratePriRows(root) {
   });
 }
 
+function cellPlainText(html) {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  return (tmp.textContent || "").trim();
+}
+
+/** Turn <br>-split Issue/Suggestion cells into spaced stacks or real lists. */
+function formatReviewTableCells(root) {
+  root.querySelectorAll("tbody td").forEach((td) => {
+    if (td.cellIndex < 2) return;
+    const raw = td.innerHTML;
+    if (!/<br\s*\/?>/i.test(raw)) return;
+
+    const parts = raw
+      .split(/<br\s*\/?>/i)
+      .map((part) => part.trim())
+      .filter(Boolean);
+    if (parts.length < 2) return;
+
+    const plainParts = parts.map(cellPlainText);
+    const allBullets = plainParts.every((text) => /^[-•*]\s+/.test(text));
+
+    if (allBullets) {
+      const ul = document.createElement("ul");
+      ul.className = "cell-list";
+      parts.forEach((part, index) => {
+        const li = document.createElement("li");
+        li.innerHTML = part.replace(/^\s*[-•*]\s+/, "");
+        if (!cellPlainText(li.innerHTML) && plainParts[index]) {
+          li.textContent = plainParts[index].replace(/^[-•*]\s+/, "");
+        }
+        ul.appendChild(li);
+      });
+      td.replaceChildren(ul);
+      return;
+    }
+
+    const stack = document.createElement("div");
+    stack.className = "cell-stack";
+    parts.forEach((part) => {
+      const line = document.createElement("div");
+      line.className = "cell-line";
+      line.innerHTML = part;
+      stack.appendChild(line);
+    });
+    td.replaceChildren(stack);
+  });
+}
+
 function syncViewportTabs() {
   els.viewportTabs.querySelectorAll("button").forEach((btn) => {
     btn.setAttribute(
@@ -313,8 +362,9 @@ async function loadFileContent(exercise, fileName) {
     if (isMarkdown(fileName)) {
       els.sourceBody.className = "source-body md";
       els.sourceBody.innerHTML = marked.parse(text);
-      if (/^REVIEW(\.vi)?\.md$/i.test(fileName.split("/").pop())) {
+      if (/^REVIEW\.md$/i.test(fileName.split("/").pop())) {
         decoratePriRows(els.sourceBody);
+        formatReviewTableCells(els.sourceBody);
       }
       return;
     }

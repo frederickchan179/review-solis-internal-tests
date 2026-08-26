@@ -37,7 +37,8 @@ Prefer **interviewer** / **interviewee**. Avoid school/hiring-doc voice (`grader
 
 - **Issue**: what is wrong, why it hurts, and how to see it (repro / evidence). No fix steps here.
 - **Suggestion**: concrete fix or BRIEF/REQUIREMENTS change only. Say what to change and what “done” looks like.
-- Split multiple points with `<br>` bullets. Do not pack Issue and Suggestion into one cell.
+- Split multiple points with `<br>` bullets (`- item<br>- item`) or stacked sentences separated by `<br>`. Do not pack Issue and Suggestion into one cell.
+- The hub turns `<br>` segments into spaced stacks / lists. Prefer that over one dense paragraph when a cell has 2+ distinct points.
 - Dev Issue = interviewee/code problem. Author Issue = test-design / interview-scoring gap.
 - Dev Suggestion = code/CSS/HTML fix. Author Suggestion = how to tighten BRIEF, REQUIREMENTS, or fixture for the interviewer.
 

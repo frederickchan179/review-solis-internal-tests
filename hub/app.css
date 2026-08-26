@@ -710,11 +710,12 @@ button {
 
 .md tbody td {
   vertical-align: top;
-  padding: 0.65rem;
+  padding: 0.75rem 0.7rem;
   border-bottom: 1px solid var(--line);
   overflow-wrap: anywhere;
   word-break: break-word;
   white-space: normal;
+  line-height: 1.55;
 }
 
 .md tbody tr:last-child td {
@@ -743,6 +744,27 @@ button {
   background: color-mix(in srgb, var(--accent-soft) 35%, transparent);
 }
 
+.md .cell-stack {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.md .cell-line {
+  margin: 0;
+}
+
+.md .cell-list {
+  margin: 0;
+  padding-left: 1.1rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.md .cell-list li {
+  margin: 0;
+  padding: 0;
+}
+
 .md code {
   font-family: var(--mono);
   font-size: 0.86em;
@@ -759,7 +781,7 @@ button {
 }
 
 .md li {
-  margin: 0.15rem 0;
+  margin: 0.35rem 0;
 }
 
 .md tr.pri-required td:first-child {
