@@ -1,7 +1,7 @@
 import { marked } from "https://cdn.jsdelivr.net/npm/marked@15.0.7/+esm";
 import hljs from "https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/+esm";
 
-const EXERCISES_URL = "/api/exercises";
+const MANIFEST_URL = new URL("../exercises/manifest.json", import.meta.url);
 const VIEWPORT_KEY = "solis-review-viewport";
 const REVIEW_W_KEY = "solis-review-width";
 const REVIEW_W_DEFAULT = 420;
@@ -38,16 +38,6 @@ const els = {
   viewportTabs: document.getElementById("viewport-tabs"),
   viewportSize: document.getElementById("viewport-size"),
   splitter: document.getElementById("review-splitter"),
-  openUpload: document.getElementById("open-upload"),
-  uploadDialog: document.getElementById("upload-dialog"),
-  uploadForm: document.getElementById("upload-form"),
-  uploadFile: document.getElementById("upload-file"),
-  uploadName: document.getElementById("upload-name"),
-  uploadSlugPreview: document.getElementById("upload-slug-preview"),
-  uploadSubmit: document.getElementById("upload-submit"),
-  uploadCancel: document.getElementById("upload-cancel"),
-  uploadClose: document.getElementById("upload-close"),
-  uploadStatus: document.getElementById("upload-status"),
 };
 
 marked.setOptions({
@@ -82,6 +72,13 @@ function fileExt(name) {
 
 function isMarkdown(name) {
   return fileExt(name) === "md";
+}
+
+function exerciseUrl(exercise, fileName = "") {
+  const base = new URL(exercise.path, document.baseURI);
+  if (!fileName) return base;
+  const parts = fileName.split("/").map(encodeURIComponent).join("/");
+  return new URL(parts, base);
 }
 
 function decoratePriRows(root) {
@@ -254,64 +251,6 @@ function setupReviewResize() {
   });
 }
 
-function handleizeName(raw) {
-  return String(raw || "")
-    .trim()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .replace(/^\d+[\s._-]*/, "")
-    .replace(/[\s_]+/g, "-")
-    .replace(/[^a-z0-9-]/g, "")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-function baseSlug(dirName) {
-  return String(dirName || "").replace(/^\d+-/, "");
-}
-
-function nextExerciseNum() {
-  const nums = exercises
-    .map((item) => Number.parseInt(item.num, 10))
-    .filter((n) => Number.isFinite(n) && n > 0);
-  return (nums.length ? Math.max(...nums) : 0) + 1;
-}
-
-function previewUploadSlug(name) {
-  const base = handleizeName(name);
-  if (!base) {
-    els.uploadSlugPreview.textContent = "";
-    els.uploadSlugPreview.classList.remove("is-conflict");
-    return null;
-  }
-
-  const existing = exercises.find((item) => baseSlug(item.id) === base);
-  if (existing) {
-    els.uploadSlugPreview.textContent = `Folder: ${existing.id} (already exists)`;
-    els.uploadSlugPreview.classList.add("is-conflict");
-    return existing.id;
-  }
-
-  const slug = `${String(nextExerciseNum()).padStart(2, "0")}-${base}`;
-  els.uploadSlugPreview.textContent = `Folder: ${slug}`;
-  els.uploadSlugPreview.classList.remove("is-conflict");
-  return slug;
-}
-
-function suggestNameFromFile(file) {
-  if (!file?.name) return "";
-  return file.name
-    .replace(/\.zip$/i, "")
-    .replace(/^\d+[\s._-]*/, "")
-    .trim();
-}
-
-function setUploadStatus(message, kind = "") {
-  els.uploadStatus.textContent = message;
-  els.uploadStatus.className = `upload-status${kind ? ` is-${kind}` : ""}`;
-}
-
 function renderFileList() {
   els.fileList.innerHTML = currentFiles
     .map(
@@ -328,13 +267,8 @@ function renderFileList() {
     .join("");
 }
 
-async function loadExerciseFiles(exercise) {
-  const res = await fetch(`${EXERCISES_URL}/${exercise.id}/files`, {
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error(`Could not load files (${res.status})`);
-  const data = await res.json();
-  currentFiles = data.files || [];
+function loadExerciseFiles(exercise) {
+  currentFiles = Array.isArray(exercise.files) ? [...exercise.files] : [];
   currentFile = currentFiles[0] || null;
   renderFileList();
 }
@@ -353,7 +287,7 @@ async function loadFileContent(exercise, fileName) {
   els.sourceBody.className = "source-body loading";
   els.sourceBody.textContent = "Loading…";
 
-  const url = `${exercise.path}${fileName.split("/").map(encodeURIComponent).join("/")}`;
+  const url = exerciseUrl(exercise, fileName);
   try {
     const res = await fetch(url, { cache: "no-store" });
     if (!res.ok) throw new Error(`${res.status}`);
@@ -383,7 +317,7 @@ async function loadFileContent(exercise, fileName) {
 
 async function loadSourcePanel(exercise) {
   try {
-    await loadExerciseFiles(exercise);
+    loadExerciseFiles(exercise);
     await loadFileContent(exercise, currentFile);
   } catch (err) {
     els.sourceFileName.textContent = "";
@@ -408,10 +342,11 @@ function selectExercise(id, { pushHash = true } = {}) {
     );
   });
 
+  const href = exerciseUrl(exercise).href;
   els.stageTitle.textContent = `${exercise.num} ${exercise.name}`;
   els.stagePath.textContent = exercise.path;
-  els.openTab.href = exercise.path;
-  els.frame.src = `${exercise.path}?t=${Date.now()}`;
+  els.openTab.href = href;
+  els.frame.src = `${href}?t=${Date.now()}`;
 
   void loadSourcePanel(exercise);
 }
@@ -431,9 +366,10 @@ function renderNav() {
 }
 
 async function refreshExercises() {
-  const res = await fetch(EXERCISES_URL, { cache: "no-store" });
+  const res = await fetch(MANIFEST_URL, { cache: "no-store" });
   if (!res.ok) throw new Error(`Failed to load exercises (${res.status})`);
-  exercises = await res.json();
+  const data = await res.json();
+  exercises = Array.isArray(data.exercises) ? data.exercises : [];
   renderNav();
 }
 
@@ -456,141 +392,6 @@ function setupFileList() {
   });
 }
 
-function openUploadDialog() {
-  els.uploadForm.reset();
-  setUploadStatus("");
-  previewUploadSlug("");
-  els.uploadDialog.showModal();
-  queueMicrotask(() => els.uploadName.focus());
-}
-
-function closeUploadDialog() {
-  if (els.uploadDialog.open) els.uploadDialog.close();
-}
-
-async function postExerciseUpload(file, name, { overwrite = false } = {}) {
-  const body = new FormData();
-  body.set("name", name);
-  if (overwrite) body.set("overwrite", "1");
-  body.set("file", file, file.name);
-
-  const res = await fetch(EXERCISES_URL, {
-    method: "POST",
-    body,
-  });
-  const data = await res.json().catch(() => ({}));
-  return { res, data };
-}
-
-function setupUpload() {
-  els.openUpload.addEventListener("click", openUploadDialog);
-  els.uploadCancel.addEventListener("click", closeUploadDialog);
-  els.uploadClose.addEventListener("click", closeUploadDialog);
-
-  els.uploadDialog.addEventListener("click", (event) => {
-    if (event.target === els.uploadDialog) closeUploadDialog();
-  });
-
-  els.uploadDialog.addEventListener("close", () => {
-    els.uploadForm.reset();
-    setUploadStatus("");
-    previewUploadSlug("");
-    els.openUpload.focus();
-  });
-
-  els.uploadName.addEventListener("input", () => {
-    previewUploadSlug(els.uploadName.value);
-  });
-
-  els.uploadForm.addEventListener("change", (event) => {
-    if (event.target === els.uploadFile && !els.uploadName.value.trim()) {
-      const suggested = suggestNameFromFile(els.uploadFile.files?.[0]);
-      if (suggested) {
-        els.uploadName.value = suggested;
-        previewUploadSlug(suggested);
-      }
-    }
-  });
-
-  els.uploadForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const file = els.uploadFile.files?.[0];
-    if (!file) {
-      setUploadStatus("Please choose a ZIP file first.", "error");
-      return;
-    }
-
-    const name = els.uploadName.value.trim();
-    if (!name) {
-      setUploadStatus("Give this exercise a name.", "error");
-      return;
-    }
-    if (!handleizeName(name)) {
-      setUploadStatus("Use a simple name: letters and numbers.", "error");
-      return;
-    }
-
-    els.uploadSubmit.disabled = true;
-    setUploadStatus("Uploading…");
-
-    try {
-      let { res, data } = await postExerciseUpload(file, name);
-
-      if (res.status === 409 && data.conflict && data.slug) {
-        const ok = window.confirm(
-          `"${data.slug}" already exists.\n\nReplace it with this ZIP?`,
-        );
-        if (!ok) {
-          setUploadStatus("Upload cancelled. That name is already in use.", "error");
-          return;
-        }
-        setUploadStatus("Replacing…");
-        ({ res, data } = await postExerciseUpload(file, name, { overwrite: true }));
-      }
-
-      if (!res.ok) {
-        throw new Error(friendlyUploadError(data.error) || "Upload failed.");
-      }
-
-      exercises = data.exercises || [];
-      renderNav();
-      closeUploadDialog();
-      selectExercise(data.exercise.id);
-    } catch (err) {
-      setUploadStatus(err.message || "Upload failed. Please try again.", "error");
-    } finally {
-      els.uploadSubmit.disabled = false;
-    }
-  });
-}
-
-function friendlyUploadError(message) {
-  if (!message) return "";
-  const text = String(message);
-  if (/already exists/i.test(text)) {
-    return "That name is already used. Pick another name.";
-  }
-  if (/does not exist/i.test(text)) {
-    return "That exercise is not in the list anymore. Refresh and try again.";
-  }
-  if (/index\.html/i.test(text)) {
-    return "This ZIP needs an index.html inside (at the top level or in one folder).";
-  }
-  if (/only \.zip/i.test(text) || /zip files are allowed/i.test(text)) {
-    return "Please upload a .zip file.";
-  }
-  if (/required/i.test(text) && /name/i.test(text)) {
-    return "Give this exercise a name.";
-  }
-  if (/simple name|letters, numbers|hyphens/i.test(text)) {
-    return "Use a simple name: letters, numbers, and hyphens only.";
-  }
-  if (/exceeds|LIMIT_FILE_SIZE|too large/i.test(text)) {
-    return "That ZIP is too large. Try a smaller file.";
-  }
-  return text;
-}
-
 els.viewportTabs.addEventListener("click", (event) => {
   const btn = event.target.closest("button[data-viewport]");
   if (!btn) return;
@@ -607,7 +408,6 @@ async function boot() {
   setupReviewResize();
   setupNavClicks();
   setupFileList();
-  setupUpload();
   await refreshExercises();
 
   const fromHash = parseHash();

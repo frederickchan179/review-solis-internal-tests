@@ -1,0 +1,145 @@
+{
+  "generatedAt": "2026-08-26T07:50:33.987Z",
+  "exercises": [
+    {
+      "id": "01-accordion",
+      "num": "01",
+      "name": "Accordion",
+      "path": "exercises/01-accordion/",
+      "files": [
+        "REVIEW.md",
+        "BRIEF.md",
+        "REQUIREMENTS.md",
+        "index.html",
+        "style.css",
+        "script.js"
+      ]
+    },
+    {
+      "id": "02-faq-search",
+      "num": "02",
+      "name": "FAQ Search",
+      "path": "exercises/02-faq-search/",
+      "files": [
+        "REVIEW.md",
+        "BRIEF.md",
+        "REQUIREMENTS.md",
+        "index.html",
+        "style.css",
+        "script.js"
+      ]
+    },
+    {
+      "id": "03-product-grid",
+      "num": "03",
+      "name": "Product Grid",
+      "path": "exercises/03-product-grid/",
+      "files": [
+        "REVIEW.md",
+        "BRIEF.md",
+        "REQUIREMENTS.md",
+        "index.html",
+        "style.css",
+        "script.js"
+      ]
+    },
+    {
+      "id": "04-variant-selector",
+      "num": "04",
+      "name": "Variant Selector",
+      "path": "exercises/04-variant-selector/",
+      "files": [
+        "REVIEW.md",
+        "BRIEF.md",
+        "REQUIREMENTS.md",
+        "index.html",
+        "style.css",
+        "script.js"
+      ]
+    },
+    {
+      "id": "05-cart-qty",
+      "num": "05",
+      "name": "Cart Quantity",
+      "path": "exercises/05-cart-qty/",
+      "files": [
+        "REVIEW.md",
+        "BRIEF.md",
+        "REQUIREMENTS.md",
+        "index.html",
+        "style.css",
+        "script.js"
+      ]
+    },
+    {
+      "id": "06-modal-dialog",
+      "num": "06",
+      "name": "Modal Dialog",
+      "path": "exercises/06-modal-dialog/",
+      "files": [
+        "REVIEW.md",
+        "BRIEF.md",
+        "REQUIREMENTS.md",
+        "index.html",
+        "style.css",
+        "script.js"
+      ]
+    },
+    {
+      "id": "07-tabs",
+      "num": "07",
+      "name": "Tabs",
+      "path": "exercises/07-tabs/",
+      "files": [
+        "REVIEW.md",
+        "BRIEF.md",
+        "REQUIREMENTS.md",
+        "index.html",
+        "style.css",
+        "script.js"
+      ]
+    },
+    {
+      "id": "08-carousel",
+      "num": "08",
+      "name": "Carousel",
+      "path": "exercises/08-carousel/",
+      "files": [
+        "REVIEW.md",
+        "BRIEF.md",
+        "REQUIREMENTS.md",
+        "index.html",
+        "style.css",
+        "script.js"
+      ]
+    },
+    {
+      "id": "09-form-validation",
+      "num": "09",
+      "name": "Form Validation",
+      "path": "exercises/09-form-validation/",
+      "files": [
+        "REVIEW.md",
+        "BRIEF.md",
+        "REQUIREMENTS.md",
+        "index.html",
+        "style.css",
+        "script.js"
+      ]
+    },
+    {
+      "id": "10-search-autocomplete",
+      "num": "10",
+      "name": "Search Autocomplete",
+      "path": "exercises/10-search-autocomplete/",
+      "files": [
+        "REVIEW.md",
+        "BRIEF.md",
+        "REQUIREMENTS.md",
+        "index.html",
+        "style.css",
+        "script.js"
+      ]
+    }
+  ]
+}

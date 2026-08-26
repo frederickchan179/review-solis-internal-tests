@@ -14,7 +14,7 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github.min.css"
     />
-    <link rel="stylesheet" href="/hub/app.css" />
+    <link rel="stylesheet" href="hub/app.css" />
   </head>
   <body>
     <div class="app">
@@ -28,11 +28,6 @@
           <span class="panel-label">Exercises</span>
         </div>
         <ol class="nav" id="nav"></ol>
-        <div class="sidebar-foot">
-          <button type="button" class="btn btn-accent btn-block" id="open-upload">
-            Add an exercise
-          </button>
-        </div>
       </aside>
 
       <section class="stage" aria-label="Live fixture">
@@ -109,65 +104,6 @@
       </aside>
     </div>
 
-    <dialog class="modal" id="upload-dialog" aria-labelledby="upload-title">
-      <div class="modal-card">
-        <header class="modal-head">
-          <h2 id="upload-title">Add an exercise</h2>
-          <button
-            type="button"
-            class="btn btn-ghost icon-btn"
-            id="upload-close"
-            aria-label="Close"
-          >
-            ✕
-          </button>
-        </header>
-
-        <form id="upload-form" class="modal-body">
-          <p class="modal-lead">
-            Upload a ZIP of the exercise folder. Give it a short name; we will
-            turn it into a folder name and add the next number for you.
-          </p>
-
-          <label class="field">
-            <span class="field-label">ZIP file</span>
-            <input
-              id="upload-file"
-              name="file"
-              type="file"
-              accept=".zip,application/zip"
-              required
-            />
-          </label>
-
-          <label class="field" id="name-field">
-            <span class="field-label">Name</span>
-            <input
-              id="upload-name"
-              name="name"
-              type="text"
-              placeholder="e.g. Checkout form"
-              autocomplete="off"
-              spellcheck="false"
-              required
-            />
-            <span class="field-hint mono" id="upload-slug-preview"></span>
-          </label>
-
-          <p class="upload-status" id="upload-status" role="status"></p>
-        </form>
-
-        <footer class="modal-foot">
-          <button type="button" class="btn btn-ghost" id="upload-cancel">
-            Cancel
-          </button>
-          <button type="submit" class="btn btn-accent" id="upload-submit" form="upload-form">
-            Upload
-          </button>
-        </footer>
-      </div>
-    </dialog>
-
-    <script type="module" src="/hub/app.js"></script>
+    <script type="module" src="hub/app.js"></script>
   </body>
 </html>

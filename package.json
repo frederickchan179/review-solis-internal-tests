@@ -3,17 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node serve.mjs",
-    "serve": "node serve.mjs"
-  },
-  "dependencies": {
-    "adm-zip": "^0.6.0",
-    "express": "^5.2.1",
-    "multer": "^2.2.0"
-  },
-  "devDependencies": {
-    "@types/adm-zip": "^0.5.8",
-    "@types/express": "^5.0.6",
-    "@types/multer": "^2.2.0"
+    "build": "node scripts/build-manifest.mjs",
+    "prestart": "npm run build",
+    "start": "npx --yes serve -l 8765 .",
+    "serve": "npm start"
   }
 }
