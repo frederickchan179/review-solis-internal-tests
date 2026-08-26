@@ -15,6 +15,7 @@ Prefer **interviewer** / **interviewee**. Avoid school/hiring-doc voice (`grader
 ## Deliverables
 
 - One English `REVIEW.md` per exercise folder (no Vietnamese twin).
+- One `AGENT.md` per exercise: two copy-paste prompts (Dev fixture fix + Author materials). Regenerate with `npm run build:agent` after editing `REVIEW.md`.
 - Title: `Review - 01 Accordion`.
 - Two sections only: **Dev: Findings** and **Author: improve the test**.
 - Both sections use the **same table shape** (see Format). Do not invent Gap-only Author tables.

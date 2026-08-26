@@ -9,6 +9,7 @@ const OUT = path.join(EXERCISES_DIR, "manifest.json");
 
 const FILE_ORDER = [
   "REVIEW.md",
+  "AGENT.md",
   "BRIEF.md",
   "REQUIREMENTS.md",
   "index.html",

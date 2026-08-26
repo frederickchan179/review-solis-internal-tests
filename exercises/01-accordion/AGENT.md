@@ -1,0 +1,48 @@
+# Agent prompts - 01 Accordion
+
+Copy one block into an AI / agent / LLM. Point it at `exercises/01-accordion/`.
+
+### Dev: Findings
+
+```text
+You are fixing the interviewee fixture for Review - 01 Accordion (`exercises/01-accordion/`).
+
+Work only in this folder's fixture files: `index.html`, `style.css`, `script.js` (and any other fixture assets already there). Do not edit `BRIEF.md`, `REQUIREMENTS.md`, `REVIEW.md`, or `AGENT.md`.
+
+Apply every row below. Do all Required rows before Optional. For each row, implement the Suggestion so the Issue is gone. Keep changes minimal and interview-scoped. Do not invent production hardening beyond the Suggestions.
+
+After edits, the fixture should satisfy the linked REQUIREMENTS / BRIEF-critical traps called out in the Issues.
+
+## Findings
+
+| Pri | Area | Issue | Suggestion |
+|-----|------|-------|------------|
+| Required | State | Open state is stored as `openIndex` on the *filtered* list, not by FAQ `id`.<br>Repro: open "What is your return policy?" (index 1), type `How` → "How do I find my size?" becomes index 1 and looks open even though the user never opened it.<br>REQUIREMENTS: if the open FAQ is still in the filtered list, it must stay open; if it was filtered out, no other item should appear open. | Track open state by FAQ `id` (e.g. `openId`, or `null`).<br>In render, expand only when `item.id === openId`.<br>Do not re-map "what is open" through the filtered list's indexes. |
+| Required | A11y | Closed panels only use `max-height: 0` and `overflow: hidden`. They look hidden, but the content stays in the page.<br>The sizing answer still has `<a href="#">`. Tab can land on that link while the panel looks closed.<br>REQUIREMENTS: closed content, including links, must not be reachable with Tab. | Take closed panels out of keyboard focus (`hidden` / `inert`, or disable/remove focusable nodes while closed).<br>CSS height clipping alone is not enough. |
+| Required | Layout | Open panels are capped at `max-height: 200px`.<br>The shipping answer often still fits under that cap on a tall screen, so the bug is easy to miss on the happy path.<br>Zoom, a narrow window, or a longer answer cuts the text off with no scroll inside the panel.<br>REQUIREMENTS: long answers must be fully readable when open. | When open, let the panel grow with the content, or scroll inside the panel.<br>Drop the hard `200px` cap. |
+| Optional | HTML | The filter only has a placeholder, so it has no reliable accessible name.<br>It is `type="text"` instead of `type="search"`.<br>The FAQ is a bare `<div id="accordion">`, not a named section. | Add a visible `<label>` or `aria-label` on the filter.<br>Prefer `type="search"`.<br>Wrap the FAQ in a named `<section>`. |
+| Optional | A11y | Buttons already have `aria-expanded`, but panels have no stable `id` / `aria-controls`, so a screen reader cannot reliably pair header and content.<br>The decorative `+` is read aloud as text.<br>Filter and buttons have no `:focus-visible` style. | Give each panel an `id` and point the button at it with `aria-controls`.<br>Hide the `+` with `aria-hidden="true"`.<br>Add `:focus-visible` on the filter and accordion buttons. |
+| Optional | UX | The filter is case-sensitive and only searches `question`, not `answer`.<br>When nothing matches, the list goes blank with no "No results" message.<br>The sizing support link uses `href="#"`, which jumps to the top of the page.<br>These are not in REQUIREMENTS (nice-to-have / strong signal, Pass+). | Make the filter ignore case and search question + answer.<br>Show a clear empty message when nothing matches.<br>Use a real URL, or `preventDefault` on the support link. |
+| Optional | JS | Every toggle and filter rebuilds the whole list with `innerHTML` and rebinds click listeners.<br>The filter also re-renders when the trimmed query did not change. | Prefer one delegated click on `#accordion`.<br>Skip re-render when the trimmed query is unchanged. |
+| Optional | CSS | The icon rotate always runs and ignores `prefers-reduced-motion`. | Turn off or shorten the rotate when `prefers-reduced-motion: reduce`. |
+```
+
+### Author: improve the test
+
+```text
+You are improving the interview materials for Review - 01 Accordion (`exercises/01-accordion/`).
+
+Edit `BRIEF.md`, `REQUIREMENTS.md`, and/or the buggy fixture (`index.html`, `style.css`, `script.js`) so probing and scoring stay fair. Do not edit `REVIEW.md` or `AGENT.md`. Do not solve the exercise for the interviewee unless an Author Suggestion explicitly changes the fixture trap.
+
+Apply every row below. Do all Required rows before Optional. For each row, implement the Suggestion so the Issue is gone. Keep the exercise about 40 minutes. Prefer clearer BRIEF steps, REQUIREMENTS, and score-checklist language over large rewrites.
+
+## Author notes
+
+| Pri | Area | Issue | Suggestion |
+|-----|------|-------|------------|
+| Required | Clip | The shipping answer still fits under the `200px` open cap on many screens.<br>Interviewers and interviewees can miss the cut-off if they only try the normal path. | Lengthen the shipping (or another) answer so it overflows `200px`, or lower the open cap to about `80px` so clipping is obvious. |
+| Required | Identity | The main lesson is index vs `id`, but the BRIEF never forces a clear open-then-filter check.<br>Someone who only opens and closes items can look done while still tracking open state by filtered index. | Add a BRIEF step: open item B, filter until only A remains (or A takes B's old index) → which panel is open? |
+| Required | Scoring | An interviewee can look fine on the normal path while still storing open state as a filtered-list index.<br>Without an explicit score line, interviewers mark this differently. | Score checklist: Fail if open state is keyed off the filtered list index instead of FAQ `id`. |
+| Optional | Soft scope | Case-insensitive filter and an empty message are good UX, but they are not in REQUIREMENTS.<br>Interviewers disagree on Fail vs nice-to-have (Pass+). | Move those behaviors into REQUIREMENTS, or mark them Pass+ / out of scope in the BRIEF. |
+```
+

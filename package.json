@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node scripts/build-manifest.mjs",
+    "build": "node scripts/build-agent-prompts.mjs && node scripts/build-manifest.mjs",
+    "build:manifest": "node scripts/build-manifest.mjs",
+    "build:agent": "node scripts/build-agent-prompts.mjs",
     "prestart": "npm run build",
     "start": "npx --yes serve -l 8765 .",
     "serve": "npm start"

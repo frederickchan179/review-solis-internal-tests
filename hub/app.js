@@ -88,6 +88,45 @@ function decoratePriRows(root) {
   });
 }
 
+function enhanceCopyableCodeBlocks(root) {
+  root.querySelectorAll("pre").forEach((pre) => {
+    if (pre.closest(".code-block-wrap")) return;
+
+    const wrap = document.createElement("div");
+    wrap.className = "code-block-wrap";
+    pre.replaceWith(wrap);
+    wrap.appendChild(pre);
+    if (!pre.classList.contains("code-block")) pre.classList.add("code-block");
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "copy-code-btn";
+    btn.textContent = "Copy";
+    btn.setAttribute("aria-label", "Copy code block");
+    wrap.appendChild(btn);
+
+    btn.addEventListener("click", async () => {
+      const code = pre.querySelector("code") || pre;
+      const text = code.textContent || "";
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = "Copied";
+        btn.classList.add("is-copied");
+        window.setTimeout(() => {
+          btn.textContent = "Copy";
+          btn.classList.remove("is-copied");
+        }, 1600);
+      } catch (err) {
+        btn.textContent = "Failed";
+        console.error(err);
+        window.setTimeout(() => {
+          btn.textContent = "Copy";
+        }, 1600);
+      }
+    });
+  });
+}
+
 function cellPlainText(html) {
   const tmp = document.createElement("div");
   tmp.innerHTML = html;
@@ -297,6 +336,7 @@ async function loadFileContent(exercise, fileName) {
         decoratePriRows(els.sourceBody);
         formatReviewTableCells(els.sourceBody);
       }
+      enhanceCopyableCodeBlocks(els.sourceBody);
       return;
     }
 
@@ -305,6 +345,7 @@ async function loadFileContent(exercise, fileName) {
     const highlighted = hljs.highlight(text, { language: lang }).value;
     els.sourceBody.className = "source-body code-view";
     els.sourceBody.innerHTML = `<pre class="code-block"><code class="hljs language-${lang}">${highlighted}</code></pre>`;
+    enhanceCopyableCodeBlocks(els.sourceBody);
   } catch (err) {
     els.sourceBody.className = "source-body error";
     els.sourceBody.textContent = `Could not open ${fileName}.`;

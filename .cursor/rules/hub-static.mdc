@@ -23,7 +23,9 @@ npm run build      # regenerate exercises/manifest.json only
 
 After adding, renaming, or removing an exercise folder (or changing which files it contains), run `npm run build` and commit the updated `manifest.json`.
 
-Editing `REVIEW.md` / fixture source alone does not require a manifest rebuild unless file names changed.
+After editing `REVIEW.md`, run `npm run build:agent` (or full `npm run build`) so `AGENT.md` prompts stay in sync.
+
+Editing fixture source alone does not require a manifest rebuild unless file names changed.
 
 ## Deploy
 

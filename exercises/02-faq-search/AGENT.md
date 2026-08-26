@@ -1,0 +1,48 @@
+# Agent prompts - 02 FAQ Search
+
+Copy one block into an AI / agent / LLM. Point it at `exercises/02-faq-search/`.
+
+### Dev: Findings
+
+```text
+You are fixing the interviewee fixture for Review - 02 FAQ Search (`exercises/02-faq-search/`).
+
+Work only in this folder's fixture files: `index.html`, `style.css`, `script.js` (and any other fixture assets already there). Do not edit `BRIEF.md`, `REQUIREMENTS.md`, `REVIEW.md`, or `AGENT.md`.
+
+Apply every row below. Do all Required rows before Optional. For each row, implement the Suggestion so the Issue is gone. Keep changes minimal and interview-scoped. Do not invent production hardening beyond the Suggestions.
+
+After edits, the fixture should satisfy the linked REQUIREMENTS / BRIEF-critical traps called out in the Issues.
+
+## Findings
+
+| Pri | Area | Issue | Suggestion |
+|-----|------|-------|------------|
+| Required | Search | Matching uses raw `includes(query)` with no case fold.<br>Type `Security` and you get hits; type `security` and you get "No results found."<br>BRIEF already points at mixed case (`password` vs `Password`), but an answer already contains lowercase "password", so that probe can look fine even when matching is still case-sensitive.<br>REQUIREMENTS: search must not be case-sensitive. | Lowercase (or otherwise normalize) both the query and the article fields before `includes`. |
+| Required | Race | Every keystroke starts a new `fakeSearchAPI` call. There is no request id or `AbortController`.<br>Delays are random (100-800ms), so a slow older response can overwrite results for a newer query.<br>REQUIREMENTS: shown results must match the most recently typed query. | Tag each request with a rising id, or use `AbortController`.<br>Ignore out of date `.then` so only the latest query can update the UI. |
+| Required | Clear | Clearing the box empties the DOM and returns early, but in-flight requests are not cancelled or ignored.<br>When those promises finish, `renderResults` can bring old hits back after the field is empty.<br>REQUIREMENTS: after clear, no results (old or newly arriving) until the user types again. | On clear, cancel or mark pending work as out of date (same token/abort as the race fix).<br>Emptying the UI alone is not enough. |
+| Required | XSS | Results are built with `innerHTML`.<br>Article HTML such as `<em>support@example.com</em>` becomes real markup.<br>The query is dropped raw into `` <mark>${query}</mark> ``, so typed HTML can run.<br>REQUIREMENTS: article text must never execute as unintended live markup. | Escape text, or use `textContent` / safe DOM nodes, before display.<br>Build highlights with DOM nodes; never paste untrusted strings into HTML. |
+| Optional | Highlight | `String.replace(query, ...)` only replaces the first match and stays case-sensitive even after search matching is fixed.<br>A query with several hits still looks half-highlighted. | If keeping highlight: global, case-insensitive, regex-escaped replace on already-escaped text (or an equivalent DOM walk). |
+| Optional | CSS | `mark` is styled only under `.faq-search__answer`, so title highlights look plain.<br>The search input has no `:focus-visible`. | Style `mark` under the item (or stop highlighting titles).<br>Add `:focus-visible` on the input. |
+| Optional | HTML / a11y | The search field only has a placeholder, so it lacks a durable accessible name.<br>`#status` updates "Searching..." / counts but is not a live region, so screen readers can miss it. | Add a visible label (or `aria-label`); `type="search"` is fine.<br>Make `#status` an `aria-live` region (`polite`). |
+| Optional | Perf / UX | There is no debounce, so every key fires a request and the status flickers.<br>Not in REQUIREMENTS (nice-to-have / strong signal, Pass+). | Debounce input before calling the API.<br>Keep status and results on the same "latest request" check. |
+```
+
+### Author: improve the test
+
+```text
+You are improving the interview materials for Review - 02 FAQ Search (`exercises/02-faq-search/`).
+
+Edit `BRIEF.md`, `REQUIREMENTS.md`, and/or the buggy fixture (`index.html`, `style.css`, `script.js`) so probing and scoring stay fair. Do not edit `REVIEW.md` or `AGENT.md`. Do not solve the exercise for the interviewee unless an Author Suggestion explicitly changes the fixture trap.
+
+Apply every row below. Do all Required rows before Optional. For each row, implement the Suggestion so the Issue is gone. Keep the exercise about 40 minutes. Prefer clearer BRIEF steps, REQUIREMENTS, and score-checklist language over large rewrites.
+
+## Author notes
+
+| Pri | Area | Issue | Suggestion |
+|-----|------|-------|------------|
+| Required | Case probe | BRIEF uses `password` vs `Password`, but an answer already contains lowercase "password", so a case-sensitive bug can still look fine.<br>Interviewers and interviewees miss the trap. | Point the BRIEF at title casing like `Security` / `Internationally`, where the wrong case truly returns empty. |
+| Required | XSS wording | REQUIREMENTS already say markup must never execute as live markup, but "in a way that wasn't intended by the article author" still leaves room to argue that intentional `<em>` may stay live.<br>Interviewers disagree on escape vs sanitize vs "the author meant `<em>`". | Say: treat API HTML as untrusted text.<br>Add one sample payload in REQUIREMENTS so the bar is concrete. |
+| Required | Checklist | Case/race behavior and the XSS write-up can diverge.<br>One score line hides a partial Fail (race fixed, XSS ignored). | Score case/race and XSS handling as separate checklist lines. |
+| Optional | Debounce | Debounce is good UX but not in REQUIREMENTS, so Pass vs Pass+ scoring is uneven. | Mark debounce out of scope or Pass+ in the BRIEF/REQUIREMENTS. |
+```
+
