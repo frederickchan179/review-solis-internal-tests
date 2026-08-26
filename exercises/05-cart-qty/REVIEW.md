@@ -2,23 +2,23 @@
 
 ### Dev: Findings
 
-| Pri | Area | Issue |
-|-----|------|-------|
-| Required | Remove | - `Math.max(1, …)` → `-` at qty 1 does nothing<br>- Line never leaves the cart<br>- Req: going below 1 must remove the line |
-| Required | Bad input | - Manual handler uses raw `parseInt`<br>- Type `abc` then `+` → field shows **`NaN`**<br>- `0` / negatives can enter state |
-| Required | Desync | - Type `2.9` → input stays `2.9`, state becomes `2`<br>- Display and state diverge<br>- Fix: always write normalized value back into the input |
-| Required | Structure | - Use one `normalizeQty` + one `setQuantity` for buttons and typing<br>- Don’t scatter `parseInt` / `Math.max`<br>- Always mirror normalized value into the input |
-| Required | Race | - Every change fires `fakeUpdateCartAPI` with no ordering<br>- Mash `+` → total can belong to older qty<br>- Fix: request token (or `AbortController`); debounce typing if wanted |
-| Required | A11y | - Req asks for screen-reader announcements<br>- Total (and qty) never speak<br>- Missing `aria-live` |
-| Optional | HTML | - Qty has no label<br>- Use `type="number"` + `min`, or keep `text` but own remove-at-0<br>- Wrap stepper in a labelled group (today only `+/-` have names) |
-| Optional | UX / CSS | - No pending state while total loads (stuck feel 100-600ms)<br>- `-` never disables at min; no max<br>- Hit targets 32×32 (aim ≥44px)<br>- No disabled/pending styles; CSS property order messy |
-| Optional | JS | - `UNIT_PRICE = 12.0` is a float → prefer integer cents end to end<br>- Format at the edge<br>- Prefer `input` (or blur-normalize) vs blur-only lag<br>- Naming: `quantityInput` → `quantityInputEl` (or one `*Input` / `*Btn` / `*El` scheme)<br>- Null-check DOM queries before use |
+| Pri | Area | Issue | Suggestion |
+|-----|------|-------|------------|
+| Required | Remove | `changeQuantity` uses `Math.max(1, …)`, so `-` at qty 1 does nothing and the line never leaves the cart. REQUIREMENTS: decreasing below 1 must remove the line entirely, not silently clamp at 1. | When qty would go below 1 (button or typing), remove the line from the cart instead of clamping. |
+| Required | Bad input | The manual handler uses raw `parseInt` with no validation. Type `abc` then press `+` → the field can show **`NaN`**. `0` and negatives can also enter state. REQUIREMENTS: qty must always be a positive whole number while the line exists. | Reject or normalize invalid input. Keep qty a positive integer while the line exists; treat below-1 as remove. |
+| Required | Desync | Type `2.9` → the input can stay `2.9` while state becomes `2` via `parseInt`. Display and state diverge, so the total path no longer matches what the user sees. | Always write the normalized value back into the input after every change path. |
+| Required | Structure | `parseInt` / `Math.max` logic is scattered across buttons and typing. It is easy to fix one path and leave another broken (e.g. buttons correct, typing still NaN). | Use one `normalizeQty` and one `setQuantity` for buttons and typing. Always mirror the normalized value into the input. |
+| Required | Race | Every change fires `fakeUpdateCartAPI` with no ordering (100-600ms jitter). Mash `+` and the total can belong to an older qty. REQUIREMENTS: the total shown must match the quantity currently displayed. | Use a request token (or `AbortController`) and ignore stale responses. Debounce typing if wanted. |
+| Required | A11y | REQUIREMENTS ask for screen-reader announcements when qty/total change. The total updates silently with no `aria-live` (or equivalent), so SR users never hear the new total. | Put `aria-live="polite"` on the total (and qty if needed) so each successful update is announced. |
+| Optional | HTML | The qty field has no `<label>`. `type="text"` plus unclear min behavior makes remove-at-0 harder to reason about. Only `+/-` have accessible names; the stepper group itself is unlabeled. | Label the qty field.<br>Use `type="number"` + `min`, or keep `text` but own remove-at-0 explicitly.<br>Wrap the stepper in a labelled group. |
+| Optional | UX / CSS | There is no pending state while the total loads (100-600ms feels stuck). `-` never disables at min; there is no max. Hit targets are 32×32 (aim ≥44px). No disabled/pending styles; CSS property order is messy. | Show pending while the total loads.<br>Disable `-` at min; define a max if needed.<br>Pad hit targets ≥44px.<br>Add disabled/pending styles and normalize property order. |
+| Optional | JS | `UNIT_PRICE = 12.0` is a float (money-in-float smell). Blur/`change`-only normalize lags behind typing. Naming mixes `quantityInput` with `*Btn` / no `*El` scheme. Null-checks may be missing. | Prefer integer cents end to end; format at the edge.<br>Prefer `input` (or blur-normalize deliberately) vs silent lag.<br>Rename toward `quantityInputEl` (or one `*Input` / `*Btn` / `*El` scheme).<br>Null-check DOM queries before use. |
 
 ### Author: improve the test
 
-| Gap | Suggestion |
-|-----|------------|
-| Remove UX missing | - Req says remove below 1, not what UI becomes<br>- Empty cart? Hide row? Where does focus go?<br>- Without that, every candidate invents a different empty state |
-| Qty rules clash | - “Always a positive whole number” vs “below 1 removes” needs one clarifying sentence<br>- While line exists: qty integer ≥ 1; attempt below 1 → remove line |
-| Announce is vague | - “Must be announced” - as what?<br>- Sample: `Quantity 2, total $24.00` |
-| Race already hinted | - Keep rapid `+` in BRIEF<br>- Add: watch whether total matches the input |
+| Pri | Area | Issue | Suggestion |
+|-----|------|-------|------------|
+| Required | Remove UX | REQUIREMENTS say remove below 1, but not what the UI becomes afterward. Every candidate invents a different empty state (hide row, “cart empty”, leave a hole), and graders disagree. | Spell out empty cart / hide row / where focus should go after remove. |
+| Required | Qty rules | “Always a positive whole number” vs “below 1 removes” looks like a clash if read literally. Graders argue whether `0` may appear momentarily. | Clarify: while the line exists, qty is an integer ≥ 1; an attempt to go below 1 removes the line. |
+| Required | Announce | “Must be announced” is vague, so SR solutions diverge (live region text, polite vs assertive, qty-only vs total-only). | Give a sample announcement, e.g. `Quantity 2, total $24.00`. |
+| Optional | Race | Rapid `+` is hinted in the BRIEF, but graders may not watch whether the total matches the input after the burst. | Keep rapid `+` in the BRIEF; add: watch whether the final total matches the input. |

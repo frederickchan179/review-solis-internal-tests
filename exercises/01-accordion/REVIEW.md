@@ -2,22 +2,22 @@
 
 ### Dev: Findings
 
-| Pri | Area | Issue |
-|-----|------|-------|
-| Required | State | - Open state uses **filtered-list index** (`openIndex`), not FAQ `id`<br>- Repro: open “return policy”, type `How` → “Sizing” lands on that index and looks open<br>- Fix: store `openId`, render open state from id |
-| Required | A11y | - Closed panels only use `max-height: 0` + `overflow: hidden`<br>- Link in sizing answer stays in Tab order (looks hidden, keyboard still reaches it)<br>- Req: closed content must not be Tab-reachable<br>- Fix: `hidden` / `inert`, or remove focusables when closed (height alone is not enough) |
-| Required | Layout | - Open panels capped at `max-height: 200px`<br>- Short shipping text may still fit → bug easy to miss<br>- Longer text / zoom / narrow viewport clips with no inner scroll<br>- Fix: when open, full answer must be readable (no magic height cap) |
-| Optional | HTML | - Filter has only a placeholder → add `<label>` or `aria-label`<br>- Prefer `type="search"`<br>- Wrap FAQ in a named `<section>`, not a bare `<div>` |
-| Optional | A11y | - Buttons have `aria-expanded` but panels lack `id` / `aria-controls` / region<br>- Hide decorative `+` with `aria-hidden`<br>- Add `:focus-visible` on filter and buttons |
-| Optional | UX | - Filter is case-sensitive<br>- Searches `question` only, not `answer`<br>- No matches → empty accordion, no “No results”<br>- Support link `href="#"` jumps to page top |
-| Optional | JS | - Each toggle/filter rebuilds DOM via `innerHTML` and rebinds listeners<br>- Prefer one delegated click on `#accordion`<br>- Skip re-render when query unchanged after `trim`<br>- Keep DOM names consistent (`*El` / `*Btn`)<br>- Null-check `getElementById` / `querySelector` before use |
-| Optional | CSS | - Property order is inconsistent → pick one (positioning → display → box → type → visual)<br>- Icon rotate should respect `prefers-reduced-motion` |
+| Pri | Area | Issue | Suggestion |
+|-----|------|-------|------------|
+| Required | State | Open state is stored as `openIndex` on the *filtered* FAQ list, not by FAQ `id`. Repro: open “return policy” (index 1), type `How` in the filter → “Sizing” becomes index 1 and looks expanded even though the user never opened it. That breaks REQUIREMENTS: the open item’s identity must survive filter changes, not remap through list indexes. | Track open state by FAQ id (e.g. `openId`, or null). In render, mark a button expanded only when `item.id === openId`. Filtering must never remap open state through list indexes. |
+| Required | A11y | Closed panels only collapse with `max-height: 0` and `overflow: hidden`. The sizing answer still contains a real `<a href="#">` that stays in the Tab order while the panel looks hidden. Keyboard users can land on a link they cannot see. REQUIREMENTS say closed content (including links) must not be Tab-reachable. | Remove closed panels from the accessibility tree (`hidden` / `inert`), or strip / disable focusables while closed. Height clipping alone is not enough. |
+| Required | Layout | Open panels are capped at `max-height: 200px`. The short shipping answer may still fit, so the bug is easy to miss on a tall laptop. Longer text, zoom, or a narrow viewport clips the answer with no inner scroll. REQUIREMENTS: long answers must be fully readable when open. | When open, let the panel grow with content (or scroll inside the panel). Drop the magic `200px` cap so no answer is permanently cut off. |
+| Optional | HTML | The filter has only a placeholder, so it has no durable accessible name. It is also `type="text"` instead of `type="search"`. The FAQ list is a bare `<div id="accordion">`, not a named landmark/section. | Add a visible `<label>` or `aria-label` on the filter.<br>Prefer `type="search"`.<br>Wrap the FAQ in a named `<section>` (or equivalent landmark). |
+| Optional | A11y | Buttons expose `aria-expanded`, but panels lack stable `id` / `aria-controls` / region semantics, so AT cannot reliably pair header and content. The decorative `+` icon is announced as text. Filter and accordion buttons have no `:focus-visible` styles, so keyboard focus is hard to see. | Wire each panel `id` to the button via `aria-controls`, and mark the panel as a region when useful.<br>Hide the decorative `+` with `aria-hidden="true"`.<br>Add `:focus-visible` on the filter and accordion buttons. |
+| Optional | UX | Filter matching is case-sensitive and searches `question` only, not `answer`. Zero matches wipe the accordion with no “No results” message. The sizing support link uses `href="#"`, which jumps to the page top. | Make the filter case-insensitive and search question + answer.<br>Show an empty-state message when nothing matches.<br>Use a real URL or `preventDefault` on the support link. |
+| Optional | JS | Every toggle and filter rebuilds the whole tree via `innerHTML` and rebinds click listeners. The filter also re-renders when the query is unchanged after `trim`. DOM naming / null-checks are inconsistent (`accordionEl` vs bare queries). | Prefer one delegated click on `#accordion` instead of per-button rebinds.<br>Skip re-render when the trimmed query is unchanged.<br>Keep DOM names consistent (`*El` / `*Btn`) and null-check `getElementById` / `querySelector` before use. |
+| Optional | CSS | Property order jumps around across rules (positioning, box, type mixed). The icon rotate transition always runs and ignores `prefers-reduced-motion`. | Pick one CSS property order (positioning → display → box → type → visual).<br>Disable or shorten the icon rotate under `prefers-reduced-motion: reduce`. |
 
 ### Author: improve the test
 
-| Gap | Suggestion |
-|-----|------------|
-| Clip too subtle | - Shipping still fits under 200px → easy miss<br>- Lengthen the answer, or lower the cap to ~80px |
-| Identity trap | - Index-vs-id is the main lesson, but BRIEF never forces a clear repro<br>- Add step: open item B, filter until only A remains → which panel is open? |
-| Soft scope | - Case-insensitive filter / empty state not in REQUIREMENTS<br>- Promote to required, or mark Pass+ |
-| Grading | - Still keying open state by filtered index = Fail, even if happy path looks fine |
+| Pri | Area | Issue | Suggestion |
+|-----|------|-------|------------|
+| Required | Clip | The shipping answer still fits under the `200px` open cap on many screens, so graders and candidates can miss the clip bug entirely during a happy-path pass. | Lengthen the shipping (or another) answer so it overflows `200px`, or lower the open cap to ~80px so clipping is unavoidable. |
+| Required | Identity | Index-vs-id is the main lesson, but the BRIEF never forces a clear open-then-filter repro. Candidates who only toggle without filtering look “done” while still keying open state by filtered index. | Add an explicit BRIEF step: open item B, filter until only A remains (or A moves into B’s old index) → which panel is open? |
+| Optional | Soft scope | Case-insensitive filter and empty state are reasonable UX, but they are not in REQUIREMENTS. Graders disagree on whether missing them is Fail or only Pass+. | Promote those behaviors into REQUIREMENTS, or mark them Pass+ / out of scope in the BRIEF. |
+| Required | Grading | A submission can pass the visual happy path while still storing open state as a filtered-list index. Without a rubric line, that core trap grades inconsistently. | Rubric: Fail if open state is keyed off the filtered list index instead of FAQ `id`. |
