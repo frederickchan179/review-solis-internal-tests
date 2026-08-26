@@ -147,6 +147,15 @@ button {
   letter-spacing: 0.02em;
 }
 
+.topbar .credit {
+  margin: 0;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--topbar-muted);
+  opacity: 0.85;
+}
+
 .topbar .hint {
   margin: 0 0 0 auto;
   font-size: 0.8rem;
@@ -314,43 +323,43 @@ button {
   outline-offset: -1px;
 }
 
-.source-file-name {
-  margin-left: auto;
-  font-size: 0.72rem;
-  color: var(--muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 55%;
+.source-bar {
+  gap: 0.55rem 0.65rem;
+  align-items: center;
+  min-height: 2.75rem;
+  flex-wrap: nowrap;
 }
 
-.source-layout {
-  display: grid;
-  grid-template-columns: 6.75rem minmax(0, 1fr);
-  flex: 1;
-  min-height: 0;
+.source-bar .panel-label {
+  flex: 0 0 auto;
 }
 
 .file-list {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 0.2rem;
   margin: 0;
-  padding: 0.45rem 0.35rem;
+  padding: 0;
   list-style: none;
-  overflow: auto;
-  border-right: 1px solid var(--line);
-  background: var(--hover);
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+.file-list li {
+  flex: 0 0 auto;
 }
 
 .file-list button {
   display: block;
-  width: 100%;
-  padding: 0.4rem 0.45rem;
+  padding: 0.35rem 0.65rem;
   border-radius: var(--radius);
-  text-align: left;
   font-family: var(--mono);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   line-height: 1.25;
   color: var(--muted);
-  overflow-wrap: anywhere;
+  white-space: nowrap;
 }
 
 .file-list button:hover {
@@ -362,6 +371,11 @@ button {
   background: var(--accent-soft);
   color: var(--accent-ink);
   font-weight: 600;
+}
+
+.file-list button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 .source-body {
@@ -468,8 +482,7 @@ button {
   vertical-align: top;
   padding: 0.75rem 0.7rem;
   border-bottom: 1px solid var(--line);
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  overflow-wrap: break-word;
   white-space: normal;
   line-height: 1.55;
 }

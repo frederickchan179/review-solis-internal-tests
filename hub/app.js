@@ -33,7 +33,6 @@ const els = {
   stagePath: document.getElementById("stage-path"),
   openTab: document.getElementById("open-tab"),
   sourceBody: document.getElementById("source-body"),
-  sourceFileName: document.getElementById("source-file-name"),
   fileList: document.getElementById("file-list"),
   viewportTabs: document.getElementById("viewport-tabs"),
   viewportSize: document.getElementById("viewport-size"),
@@ -275,14 +274,12 @@ function loadExerciseFiles(exercise) {
 
 async function loadFileContent(exercise, fileName) {
   if (!fileName) {
-    els.sourceFileName.textContent = "";
     els.sourceBody.className = "source-body empty";
     els.sourceBody.textContent = "This exercise has no files yet.";
     return;
   }
 
   currentFile = fileName;
-  els.sourceFileName.textContent = fileName;
   renderFileList();
   els.sourceBody.className = "source-body loading";
   els.sourceBody.textContent = "Loading…";
@@ -320,7 +317,6 @@ async function loadSourcePanel(exercise) {
     loadExerciseFiles(exercise);
     await loadFileContent(exercise, currentFile);
   } catch (err) {
-    els.sourceFileName.textContent = "";
     els.fileList.innerHTML = "";
     els.sourceBody.className = "source-body error";
     els.sourceBody.textContent = "Could not load files for this exercise.";
