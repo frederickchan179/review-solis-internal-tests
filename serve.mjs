@@ -252,7 +252,6 @@ async function installExerciseFromZip(zipBuffer, { slug, overwrite = false }) {
 
 const FILE_ORDER = [
   "REVIEW.md",
-  "REVIEW.vi.md",
   "BRIEF.md",
   "REQUIREMENTS.md",
   "index.html",
