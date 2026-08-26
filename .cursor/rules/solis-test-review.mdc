@@ -1,0 +1,42 @@
+---
+description: Review SOLIS exercises - clear English tables, Required vs Optional, author notes
+alwaysApply: true
+---
+
+# SOLIS test review
+
+## Deliverables
+
+- One English `REVIEW.md` per exercise folder + Vietnamese twin `REVIEW.vi.md` (same findings; code identifiers stay English).
+- Titles: `Review - 01 Accordion` / `Review - 01 Accordion (VI)`.
+- Live-check with ego-browser when useful.
+- Single section **Dev: Findings** (functional + HTML/CSS/JS; don't drop unique detail when merging).
+- Always include **Author: improve the test** for BRIEF/REQUIREMENTS gaps (why the gap hurts grading/candidates, not just "add X").
+
+## Priority
+
+- **Required** / **Bắt buộc** = breaks REQUIREMENTS / BRIEF-critical / security-async trap.
+- **Optional** / **Tùy chọn** = extra a11y, UX, CSS/JS convention, smells (Pass+).
+- English and Vietnamese reviews both use `Required` / `Optional` in the Pri column (keep labels English for easy diff).
+
+## Voice and format
+
+- Never use Unicode en dash (U+2013) or em dash (U+2014). Use ASCII hyphen `-`, colon `:`, semicolon `;`, or a period. Ranges like `100-600ms`.
+- Write like a senior explaining to another engineer: problem -> why it hurts -> concrete fix. Natural voice; no AI filler ("ensure", "leverage", "it is recommended that").
+- Prefer short sentences. Avoid dense slang and packed clauses. A grader should get the point on first read.
+- Apply that voice to **both** Dev Findings and Author sections.
+- Tables; enough detail to act; no essays.
+- If an Issue/Suggestion cell has multiple ideas, split into bullets with `<br>` (or separate rows). Do not pack several fixes into one run-on sentence.
+
+## Scope (these are ~40min debug/fix tests)
+
+- Stay inside the exercise: BRIEF, REQUIREMENTS, and the buggy fixture.
+- Do **not** add hypothetical production notes (CMS/API escape "if data ever comes from…", CSP, HSTS, Core Web Vitals, SEO meta/sitemap/JSON-LD).
+- SEO is usually N/A for these widgets unless REQUIREMENTS say otherwise.
+- Do **not** suggest `defer` when `script.js` is already at the end of `body`.
+- Pass+ that **is** in scope when relevant: race → request id / `AbortController`; money → integer cents (call out float prices); forms → `autocomplete`; modal → native `<dialog>` as an option; touch targets ≥44px; contrast with approximate ratios; dead code / Speculative Generality; DOM naming `*El` / `*Btn` + null-check after query.
+
+## Convention baselines (Optional unless REQUIREMENTS say otherwise)
+
+- CSS property order if unspecified: positioning → display/flex → box model → typography → visual → misc.
+- JS: consistent DOM naming (`*El` for elements, `*Btn` for buttons); null-check `getElementById` / `querySelector` before use.

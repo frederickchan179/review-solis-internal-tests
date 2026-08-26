@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SOLIS Review Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/hub/app.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="topbar">
+        <h1>SOLIS Review Hub</h1>
+        <p class="hint">Fixture in iframe · reviews stay as source markdown</p>
+      </header>
+
+      <aside class="sidebar" aria-label="Exercises">
+        <h2>Exercises</h2>
+        <ol class="nav" id="nav"></ol>
+      </aside>
+
+      <section class="stage" aria-label="Live fixture">
+        <div class="stage-bar">
+          <span class="title" id="stage-title">Loading…</span>
+          <span class="path" id="stage-path"></span>
+          <div
+            class="viewport-tabs"
+            id="viewport-tabs"
+            role="tablist"
+            aria-label="Viewport size"
+          >
+            <button
+              type="button"
+              role="tab"
+              data-viewport="mobile"
+              aria-selected="false"
+              title="390px"
+            >
+              Mobile
+            </button>
+            <button
+              type="button"
+              role="tab"
+              data-viewport="tablet"
+              aria-selected="false"
+              title="768px"
+            >
+              Tablet
+            </button>
+            <button
+              type="button"
+              role="tab"
+              data-viewport="desktop"
+              aria-selected="true"
+              title="Full width"
+            >
+              Desktop
+            </button>
+          </div>
+          <span class="viewport-size" id="viewport-size" aria-live="polite"
+            >Fluid</span
+          >
+          <a id="open-tab" href="#" target="_blank" rel="noopener">Open alone</a>
+        </div>
+        <div class="frame-wrap" id="frame-wrap" data-viewport="desktop">
+          <div class="frame-shell">
+            <iframe id="fixture" title="Exercise fixture"></iframe>
+          </div>
+        </div>
+      </section>
+
+      <button
+        type="button"
+        class="splitter"
+        id="review-splitter"
+        aria-label="Resize review panel"
+        aria-orientation="vertical"
+        aria-controls="review-panel"
+        title="Drag to resize. Double-click to reset."
+      ></button>
+
+      <aside class="review" id="review-panel" aria-label="Review">
+        <div class="review-bar">
+          <span class="label">Review</span>
+          <div class="lang-tabs" id="lang-tabs" role="tablist" aria-label="Language">
+            <button type="button" role="tab" data-lang="en" aria-selected="true">
+              EN
+            </button>
+            <button type="button" role="tab" data-lang="vi" aria-selected="false">
+              VI
+            </button>
+          </div>
+        </div>
+        <div class="review-body loading" id="review-body">Loading…</div>
+      </aside>
+    </div>
+
+    <script type="module" src="/hub/app.js"></script>
+  </body>
+</html>
