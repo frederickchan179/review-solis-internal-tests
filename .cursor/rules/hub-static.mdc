@@ -1,5 +1,5 @@
 ---
-description: Static Review Hub, manifest build, and GitHub Pages deploy
+description: Static Review Hub and Coolify / Docker deploy
 alwaysApply: true
 ---
 
@@ -11,30 +11,45 @@ Site name: **Review Solis Internal Tests** (credit line in topbar is fine to kee
 
 - Static only: `index.html` + `hub/` + `exercises/`. No Express, multer, ZIP upload, or `/api/*`.
 - Exercise list and file tabs come from `exercises/manifest.json`.
-- Asset URLs are **relative** so GitHub project Pages works under `/<repo>/`.
+- Asset URLs are **relative** (works on domain root via Coolify / nginx).
 - Files panel uses **horizontal tabs**, not a vertical file sidebar.
 
 ## Local
 
 ```bash
-npm start          # build manifest, then serve on :8765
-npm run build      # regenerate exercises/manifest.json only
+npm start          # build, then serve on :8765
+npm run build      # AGENT.md prompts + exercises/manifest.json
 ```
 
-After adding, renaming, or removing an exercise folder (or changing which files it contains), run `npm run build` and commit the updated `manifest.json`.
+After adding, renaming, or removing an exercise folder (or changing which files it contains), run `npm run build` and commit the updated `manifest.json` (and regenerated `AGENT.md` files).
 
 After editing `REVIEW.md`, run `npm run build:agent` (or full `npm run build`) so `AGENT.md` prompts stay in sync.
 
 Editing fixture source alone does not require a manifest rebuild unless file names changed.
 
-## Deploy
+## Deploy (Coolify)
 
-- Push to `main` → `.github/workflows/pages.yml` builds the manifest and deploys `_site`.
-- Do not reintroduce a Node server for production.
+- Production target: **Coolify** on the private VPS, from this **private** GitHub repo.
+- Use **Dockerfile** deploy (recommended). Image builds `npm run build`, then serves with nginx on port **80**.
+- Coolify settings (typical):
+  - Build pack: Dockerfile
+  - Port: `80`
+  - Branch: `main`
+  - Auto-deploy on push
+- Do not reintroduce GitHub Pages, a Node server for production, or ZIP upload.
 - Do not commit `node_modules/` or `_site/`.
+
+Local Docker check:
+
+```bash
+docker build -t solis-review-hub .
+docker run --rm -p 8080:80 solis-review-hub
+# open http://127.0.0.1:8080/
+```
 
 ## Do not
 
 - Recreate `REVIEW.vi.md` twins.
 - Add “Add an exercise” / ZIP upload UI.
-- Use root-absolute `/hub/...` or `/exercises/...` paths in the hub shell (breaks project Pages).
+- Use root-absolute `/hub/...` or `/exercises/...` paths in the hub shell.
+- Add `.github/workflows` Pages deploy or `.nojekyll`.
