@@ -1,5 +1,5 @@
 ---
-description: Review SOLIS interview exercises - English tables, Required vs Optional, author notes
+description: Review SOLIS interview exercises - English tables, live evidence, a11y/smell lenses
 alwaysApply: true
 ---
 
@@ -16,7 +16,6 @@ Prefer **interviewer** / **interviewee**. Avoid school/hiring-doc voice (`grader
 
 - One English `REVIEW.md` per exercise folder (no Vietnamese twin).
 - Title: `Review - 01 Accordion`.
-- Live-check with ego-browser when useful.
 - Two sections only: **Dev: Findings** and **Author: improve the test**.
 - Both sections use the **same table shape** (see Format). Do not invent Gap-only Author tables.
 
@@ -70,6 +69,56 @@ Prefer **interviewer** / **interviewee**. Avoid school/hiring-doc voice (`grader
 - SEO is usually N/A for these widgets unless REQUIREMENTS say otherwise.
 - Do **not** suggest `defer` when `script.js` is already at the end of `body`.
 - Pass+ that **is** in scope when relevant: race → request id / `AbortController`; money → integer cents (call out float prices); forms → `autocomplete`; modal → native `<dialog>` as an option; touch targets ≥44px; contrast with approximate ratios; dead code / Speculative Generality; DOM naming `*El` / `*Btn` + null-check after query.
+
+## Evidence-led review (from web-quality / live practice)
+
+- Prefer **live repro** over code-only guesses when the fixture can run (`npm start`, then open `exercises/<id>/`).
+- Keep measured / live findings separate from hypotheses that only appear in source.
+- Do not invent BRIEF/REQUIREMENTS text. Quote or paraphrase only what the docs actually say.
+- A perfect automated a11y score does not replace keyboard + state checks on the widget.
+
+## Live-check with ego-browser (when useful)
+
+Prefer ego-browser over other browser automation for fixture probes.
+
+```bash
+ego-browser nodejs <<'EOF'
+const task = await useOrCreateTaskSpace('solis review <id>')
+await openOrReuseTab('http://127.0.0.1:8765/exercises/<id>/', { wait: true, timeout: 20 })
+cliLog(await snapshotText({ scope: 'only_within_viewport' }))
+cliLog(await js(String.raw`(/* DOM assertions */)`))
+await completeTaskSpace(task.id, { keep: false })
+EOF
+```
+
+- Reuse one task space across rounds for the same exercise batch; pass `task.id`.
+- Use `snapshotText`, `click` / `fillInput` / `pressKey`, and `js` for state (`aria-*`, open panels, totals).
+- If the user takes control ("user is controlling"), stop and ask; do not auto-takeover.
+- Finish with `completeTaskSpace(..., { keep: false })` unless the user wants the page left open.
+
+## Widget a11y probes (from accessibility skill; Optional unless REQUIREMENTS)
+
+Probe only what the exercise widget needs. Do not expand into full-site WCAG essays.
+
+- **Names / roles / states**: icon-only controls need an accessible name; keep `aria-expanded` / `aria-selected` / `aria-invalid` in sync with UI.
+- **Keyboard**: Tab reaches controls; Enter/Space activate; Escape closes overlays when BRIEF expects it; arrows for tabs/carousel when REQUIREMENTS say so.
+- **Focus**: modal/dialog traps focus and restores it on close; do not lose focus into `display:none` panels.
+- **Live updates**: cart totals, validation errors, async search status → `aria-live` (polite) or `role="alert"` when assertive is justified.
+- **Tabs pattern** (exercise 07): `tablist` / `tab` / `tabpanel`, `aria-controls`, roving `tabindex`, arrow keys when required.
+- **Forms** (exercise 09): visible label association; errors tied to fields; do not clear the user’s input on failed submit unless BRIEF says so.
+- **Motion** (carousel): respect `prefers-reduced-motion` when autoplay exists; pause/stop must be reachable.
+- **Targets / contrast**: call out hit areas under 44px or weak contrast with approximate ratios when they hurt the interview widget.
+
+Native `<dialog>` is a valid Suggestion for custom modal traps when BRIEF allows either approach.
+
+## Smell baseline (from code-review; Optional unless it hides a Required bug)
+
+Flag only when it helps scoring or blinds a trap. Heuristics, not hard fails:
+
+- **Speculative Generality**: unused helpers, flags, or “future” APIs not in BRIEF.
+- **Mysterious Name**: DOM/query variables that hide role (`el` / `btn` without meaning).
+- **Duplicated Code**: copy-pasted open/close or render paths that drift.
+- **Primitive Obsession**: money as float; ids as filtered array indexes after search/filter.
 
 ## Convention baselines (Optional unless REQUIREMENTS say otherwise)
 

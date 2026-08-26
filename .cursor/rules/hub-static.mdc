@@ -1,0 +1,38 @@
+---
+description: Static Review Hub, manifest build, and GitHub Pages deploy
+alwaysApply: true
+---
+
+# Hub and deploy
+
+Site name: **Review Solis Internal Tests** (credit line in topbar is fine to keep).
+
+## Architecture
+
+- Static only: `index.html` + `hub/` + `exercises/`. No Express, multer, ZIP upload, or `/api/*`.
+- Exercise list and file tabs come from `exercises/manifest.json`.
+- Asset URLs are **relative** so GitHub project Pages works under `/<repo>/`.
+- Files panel uses **horizontal tabs**, not a vertical file sidebar.
+
+## Local
+
+```bash
+npm start          # build manifest, then serve on :8765
+npm run build      # regenerate exercises/manifest.json only
+```
+
+After adding, renaming, or removing an exercise folder (or changing which files it contains), run `npm run build` and commit the updated `manifest.json`.
+
+Editing `REVIEW.md` / fixture source alone does not require a manifest rebuild unless file names changed.
+
+## Deploy
+
+- Push to `main` → `.github/workflows/pages.yml` builds the manifest and deploys `_site`.
+- Do not reintroduce a Node server for production.
+- Do not commit `node_modules/` or `_site/`.
+
+## Do not
+
+- Recreate `REVIEW.vi.md` twins.
+- Add “Add an exercise” / ZIP upload UI.
+- Use root-absolute `/hub/...` or `/exercises/...` paths in the hub shell (breaks project Pages).
