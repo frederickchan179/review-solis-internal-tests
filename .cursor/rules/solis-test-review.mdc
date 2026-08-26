@@ -1,9 +1,16 @@
 ---
-description: Review SOLIS exercises - clear English tables, Required vs Optional, author notes
+description: Review SOLIS interview exercises - English tables, Required vs Optional, author notes
 alwaysApply: true
 ---
 
 # SOLIS test review
+
+These are ~40min **interview** debug/fix exercises. Write for that room:
+
+- **Dev: Findings** = what the interviewee’s fixture/code gets wrong (and how to fix it).
+- **Author: improve the test** = how the interviewer should tighten BRIEF / REQUIREMENTS / fixture so probing and scoring stay fair.
+
+Prefer **interviewer** / **interviewee**. Avoid school/hiring-doc voice (`grader`, `candidate`, `submission` as a person, “grading” as classroom marking) unless quoting product UI copy.
 
 ## Deliverables
 
@@ -16,9 +23,10 @@ alwaysApply: true
 ## Priority
 
 - **Required** = breaks REQUIREMENTS / BRIEF-critical / security-async trap.
-- **Optional** = extra a11y, UX, CSS/JS convention, smells (Pass+).
+- **Optional** = extra a11y, UX, CSS/JS convention, smells (strong interviewee signal / Pass+).
 - Use `Required` / `Optional` in the Pri column.
-- Author rows also use Required / Optional: Required = hurts grading or hides a BRIEF-critical trap; Optional = soft scope / Pass+ clarity.
+- Author rows also use Required / Optional: Required = hurts fair interviewing or hides a BRIEF-critical trap; Optional = soft scope / Pass+ clarity.
+- In **both** Dev and Author tables, list every **Required** row before any **Optional** row.
 
 ## Table format (both sections)
 
@@ -30,12 +38,12 @@ alwaysApply: true
 - **Issue**: what is wrong, why it hurts, and how to see it (repro / evidence). No fix steps here.
 - **Suggestion**: concrete fix or BRIEF/REQUIREMENTS change only. Say what to change and what “done” looks like.
 - Split multiple points with `<br>` bullets. Do not pack Issue and Suggestion into one cell.
-- Dev Issue = candidate/code problem. Author Issue = test-design / grading gap.
-- Dev Suggestion = code/CSS/HTML fix. Author Suggestion = how to tighten BRIEF, REQUIREMENTS, or fixture.
+- Dev Issue = interviewee/code problem. Author Issue = test-design / interview-scoring gap.
+- Dev Suggestion = code/CSS/HTML fix. Author Suggestion = how to tighten BRIEF, REQUIREMENTS, or fixture for the interviewer.
 
 ## Depth (do not write telegrams)
 
-- A grader who has not just read the source must still understand each row.
+- An interviewer who has not just read the source must still understand each row.
 - Prefer 3-5 short full sentences or bullets per Issue cell: symptom → cause → impact / req link / repro.
 - Prefer 2-4 concrete bullets per Suggestion cell: what to change, where, expected result.
 - Bad: `Store openId`. Good: `Track open state by FAQ id (e.g. openId). After filter changes, the same id stays open; do not re-derive open from filtered index.`
@@ -46,11 +54,15 @@ alwaysApply: true
 ## Voice
 
 - Never use Unicode en dash (U+2013) or em dash (U+2014). Use ASCII hyphen `-`, colon `:`, semicolon `;`, or a period. Ranges like `100-600ms`.
-- Write like a senior explaining to another engineer: problem -> why it hurts -> concrete fix. Natural voice; no AI filler ("ensure", "leverage", "it is recommended that").
-- Prefer short full sentences over dense slang and packed clauses.
+- Write so a frontend dev **and** a PM/client can follow the row. Plain words for product impact; keep real technical names where they matter (`aria-live`, `AbortController`, `innerHTML`, cents, etc.).
+- Prefer: “screen reader”, “keyboard Tab”, “out of date response”, “cut off”, “score checklist” over dense shorthand (`AT`, `SR users`, `stale .then`, “score-checklist”, “Pass+” without a short gloss).
+- Keep code identifiers and API names in backticks. Do not invent softer fake names for APIs.
+- Natural voice; no AI filler ("ensure", "leverage", "it is recommended that").
+- Prefer short full sentences over packed jargon.
 - Apply that voice to **both** Dev Findings and Author sections.
+- Optional / Pass+: say “nice-to-have / strong signal” once in the row if Pass+ alone would confuse a PM.
 
-## Scope (these are ~40min debug/fix tests)
+## Scope
 
 - Stay inside the exercise: BRIEF, REQUIREMENTS, and the buggy fixture.
 - Do **not** add hypothetical production notes (CMS/API escape "if data ever comes from…", CSP, HSTS, Core Web Vitals, SEO meta/sitemap/JSON-LD).
