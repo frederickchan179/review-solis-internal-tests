@@ -10,26 +10,37 @@
       href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github.min.css"
+    />
     <link rel="stylesheet" href="/hub/app.css" />
   </head>
   <body>
     <div class="app">
       <header class="topbar">
         <h1>SOLIS Review Hub</h1>
-        <p class="hint">Fixture in iframe · reviews stay as source markdown</p>
+        <p class="hint">Pick an exercise, try it live, browse its files on the right.</p>
       </header>
 
       <aside class="sidebar" aria-label="Exercises">
-        <h2>Exercises</h2>
+        <div class="panel-bar">
+          <span class="panel-label">Exercises</span>
+        </div>
         <ol class="nav" id="nav"></ol>
+        <div class="sidebar-foot">
+          <button type="button" class="btn btn-accent btn-block" id="open-upload">
+            Add an exercise
+          </button>
+        </div>
       </aside>
 
       <section class="stage" aria-label="Live fixture">
-        <div class="stage-bar">
+        <div class="panel-bar stage-bar">
           <span class="title" id="stage-title">Loading…</span>
-          <span class="path" id="stage-path"></span>
+          <span class="path mono" id="stage-path"></span>
           <div
-            class="viewport-tabs"
+            class="seg-tabs"
             id="viewport-tabs"
             role="tablist"
             aria-label="Viewport size"
@@ -62,10 +73,12 @@
               Desktop
             </button>
           </div>
-          <span class="viewport-size" id="viewport-size" aria-live="polite"
+          <span class="mono viewport-size" id="viewport-size" aria-live="polite"
             >Fluid</span
           >
-          <a id="open-tab" href="#" target="_blank" rel="noopener">Open alone</a>
+          <a class="text-link" id="open-tab" href="#" target="_blank" rel="noopener"
+            >Open in new tab</a
+          >
         </div>
         <div class="frame-wrap" id="frame-wrap" data-viewport="desktop">
           <div class="frame-shell">
@@ -78,27 +91,82 @@
         type="button"
         class="splitter"
         id="review-splitter"
-        aria-label="Resize review panel"
+        aria-label="Resize files panel"
         aria-orientation="vertical"
-        aria-controls="review-panel"
+        aria-controls="source-panel"
         title="Drag to resize. Double-click to reset."
       ></button>
 
-      <aside class="review" id="review-panel" aria-label="Review">
-        <div class="review-bar">
-          <span class="label">Review</span>
-          <div class="lang-tabs" id="lang-tabs" role="tablist" aria-label="Language">
-            <button type="button" role="tab" data-lang="en" aria-selected="true">
-              EN
-            </button>
-            <button type="button" role="tab" data-lang="vi" aria-selected="false">
-              VI
-            </button>
-          </div>
+      <aside class="source-panel" id="source-panel" aria-label="Exercise files">
+        <div class="panel-bar">
+          <span class="panel-label">Files</span>
+          <span class="mono source-file-name" id="source-file-name"></span>
         </div>
-        <div class="review-body loading" id="review-body">Loading…</div>
+        <div class="source-layout">
+          <ul class="file-list" id="file-list" role="tablist" aria-label="Exercise files"></ul>
+          <div class="source-body loading" id="source-body">Pick a file to view.</div>
+        </div>
       </aside>
     </div>
+
+    <dialog class="modal" id="upload-dialog" aria-labelledby="upload-title">
+      <div class="modal-card">
+        <header class="modal-head">
+          <h2 id="upload-title">Add an exercise</h2>
+          <button
+            type="button"
+            class="btn btn-ghost icon-btn"
+            id="upload-close"
+            aria-label="Close"
+          >
+            ✕
+          </button>
+        </header>
+
+        <form id="upload-form" class="modal-body">
+          <p class="modal-lead">
+            Upload a ZIP of the exercise folder. Give it a short name; we will
+            turn it into a folder name and add the next number for you.
+          </p>
+
+          <label class="field">
+            <span class="field-label">ZIP file</span>
+            <input
+              id="upload-file"
+              name="file"
+              type="file"
+              accept=".zip,application/zip"
+              required
+            />
+          </label>
+
+          <label class="field" id="name-field">
+            <span class="field-label">Name</span>
+            <input
+              id="upload-name"
+              name="name"
+              type="text"
+              placeholder="e.g. Checkout form"
+              autocomplete="off"
+              spellcheck="false"
+              required
+            />
+            <span class="field-hint mono" id="upload-slug-preview"></span>
+          </label>
+
+          <p class="upload-status" id="upload-status" role="status"></p>
+        </form>
+
+        <footer class="modal-foot">
+          <button type="button" class="btn btn-ghost" id="upload-cancel">
+            Cancel
+          </button>
+          <button type="submit" class="btn btn-accent" id="upload-submit" form="upload-form">
+            Upload
+          </button>
+        </footer>
+      </div>
+    </dialog>
 
     <script type="module" src="/hub/app.js"></script>
   </body>
