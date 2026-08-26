@@ -4,9 +4,9 @@ import hljs from "https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/+esm";
 const EXERCISES_URL = "/api/exercises";
 const VIEWPORT_KEY = "solis-review-viewport";
 const REVIEW_W_KEY = "solis-review-width";
-const REVIEW_W_DEFAULT = 380;
+const REVIEW_W_DEFAULT = 420;
 const REVIEW_W_MIN = 280;
-const REVIEW_W_MAX = 720;
+const REVIEW_W_MAX = 1400;
 
 const VIEWPORTS = {
   mobile: { label: "390px" },
@@ -110,7 +110,7 @@ function setViewport(next) {
 }
 
 function clampReviewWidth(px) {
-  const maxByViewport = Math.floor(window.innerWidth * 0.62);
+  const maxByViewport = Math.floor(window.innerWidth * 0.8);
   const max = Math.max(REVIEW_W_MIN, Math.min(REVIEW_W_MAX, maxByViewport));
   return Math.round(Math.min(max, Math.max(REVIEW_W_MIN, px)));
 }

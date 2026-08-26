@@ -21,9 +21,9 @@
   --required-bg: #f8e4e0;
   --optional: #6b5a2e;
   --sidebar-w: 13rem;
-  --review-w: 22rem;
+  --review-w: 26rem;
   --splitter-w: 6px;
-  --radius: 0.45rem;
+  --radius: 0.5rem;
   --font: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
 }
@@ -79,7 +79,7 @@ button {
   gap: 0.35rem;
   min-height: 2rem;
   padding: 0.35rem 0.8rem;
-  border-radius: 999px;
+  border-radius: var(--radius);
   border: 1px solid transparent;
   font-size: 0.82rem;
   font-weight: 600;
@@ -149,14 +149,14 @@ button {
   display: inline-flex;
   padding: 0.15rem;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: var(--radius);
   background: var(--surface);
 }
 
 .seg-tabs button,
 .seg-option span {
   padding: 0.3rem 0.7rem;
-  border-radius: 999px;
+  border-radius: var(--radius);
   font-size: 0.78rem;
   font-weight: 600;
   color: var(--muted);
@@ -239,7 +239,7 @@ button {
   margin-right: 0.75rem;
   padding: 0.35rem 0.7rem;
   border: 1px solid var(--line);
-  border-radius: calc(var(--radius) - 2px);
+  border-radius: var(--radius);
   background: var(--panel);
   color: var(--ink);
   font: inherit;
@@ -415,7 +415,7 @@ button {
   min-height: 100%;
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 0.55rem;
+  border-radius: var(--radius);
   box-shadow: 0 10px 28px rgb(42 33 24 / 10%);
   overflow: hidden;
   transition: max-width 160ms ease;
@@ -501,7 +501,7 @@ button {
   display: block;
   width: 100%;
   padding: 0.4rem 0.45rem;
-  border-radius: calc(var(--radius) - 2px);
+  border-radius: var(--radius);
   text-align: left;
   font-family: var(--mono);
   font-size: 0.68rem;
@@ -563,7 +563,7 @@ button {
   margin: auto;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 0.75rem;
+  border-radius: var(--radius);
   background: var(--surface);
   box-shadow: 0 24px 60px rgb(42 33 24 / 24%);
   color: var(--ink);
@@ -690,6 +690,7 @@ button {
   border-bottom: 1px solid var(--line);
 }
 
+/* Pri | Area | Issue | Suggestion — same shape for Dev + Author */
 .md thead th:nth-child(1),
 .md tbody td:nth-child(1) {
   width: 5.25rem;
@@ -700,8 +701,10 @@ button {
   width: 4.75rem;
 }
 
-.md thead th:last-child,
-.md tbody td:last-child {
+.md thead th:nth-child(3),
+.md tbody td:nth-child(3),
+.md thead th:nth-child(4),
+.md tbody td:nth-child(4) {
   width: auto;
 }
 
@@ -732,11 +735,19 @@ button {
   overflow-wrap: break-word;
 }
 
+.md tbody td:nth-child(3) {
+  border-right: 1px solid var(--line);
+}
+
+.md tbody td:nth-child(4) {
+  background: color-mix(in srgb, var(--accent-soft) 35%, transparent);
+}
+
 .md code {
   font-family: var(--mono);
   font-size: 0.86em;
   padding: 0.05em 0.3em;
-  border-radius: 0.25rem;
+  border-radius: var(--radius);
   background: var(--hover);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
