@@ -22,7 +22,7 @@
         <h1>Review Solis Internal Tests</h1>
         <p class="credit">by Fred&apos;s Cursor AI</p>
         <p class="hint">Pick an exercise, try it live, browse its files on the right.</p>
-        <a class="text-link topbar-link" id="open-agents" href="#/agents">All agent prompts</a>
+        <a class="text-link topbar-link" id="open-library" href="#/library/reviews">All docs</a>
       </header>
 
       <aside class="sidebar" aria-label="Exercises">
@@ -31,7 +31,7 @@
         </div>
         <ol class="nav" id="nav"></ol>
         <div class="sidebar-foot">
-          <a class="btn-agents" id="open-agents-side" href="#/agents">All agent prompts</a>
+          <a class="btn-library" id="open-library-side" href="#/library/reviews">All docs</a>
         </div>
       </aside>
 
@@ -98,9 +98,38 @@
       ></button>
 
       <aside class="source-panel" id="source-panel" aria-label="Exercise files">
-        <div class="panel-bar source-bar">
+        <div class="panel-bar source-bar" id="file-bar">
           <span class="panel-label">Files</span>
           <ul class="file-list" id="file-list" role="tablist" aria-label="Exercise files"></ul>
+        </div>
+        <div class="panel-bar library-bar" id="library-bar" hidden>
+          <span class="panel-label">All docs</span>
+          <div
+            class="seg-tabs"
+            id="library-tabs"
+            role="tablist"
+            aria-label="Combined documents"
+          >
+            <button
+              type="button"
+              role="tab"
+              data-library="reviews"
+              aria-selected="true"
+            >
+              All Reviews
+            </button>
+            <button
+              type="button"
+              role="tab"
+              data-library="agents"
+              aria-selected="false"
+            >
+              All Agents
+            </button>
+          </div>
+          <a class="text-link" id="library-open-tab" href="#" target="_blank" rel="noopener"
+            >Open raw</a
+          >
         </div>
         <div class="source-body loading" id="source-body">Pick a file to view.</div>
       </aside>

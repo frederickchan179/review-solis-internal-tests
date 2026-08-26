@@ -179,7 +179,7 @@ button {
   border-top: 1px solid var(--line);
 }
 
-.btn-agents {
+.btn-library {
   display: block;
   width: 100%;
   padding: 0.55rem 0.65rem;
@@ -193,34 +193,43 @@ button {
   text-decoration: none;
 }
 
-.btn-agents:hover {
+.btn-library:hover {
   background: var(--accent-soft);
 }
 
-.btn-agents[aria-current="page"] {
+.btn-library[aria-current="page"] {
   background: var(--accent-soft);
   border-color: var(--accent);
 }
 
-.app.agents-mode {
+.library-bar {
+  gap: 0.55rem 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.library-bar .seg-tabs {
+  flex: 0 1 auto;
+}
+
+.library-bar .text-link {
+  margin-left: auto;
+}
+
+.app.library-mode {
   grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
 }
 
-.app.agents-mode .stage,
-.app.agents-mode .splitter {
+.app.library-mode .stage,
+.app.library-mode .splitter {
   display: none;
 }
 
-.app.agents-mode .source-panel {
+.app.library-mode .source-panel {
   grid-column: 2;
 }
 
-.app.agents-mode .source-layout,
-.app.agents-mode .file-list {
-  display: none;
-}
-
-.app.agents-mode .source-body {
+.app.library-mode .source-body {
   flex: 1;
 }
 

@@ -3,7 +3,20 @@ import hljs from "https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/+esm";
 
 const MANIFEST_URL = new URL("../exercises/manifest.json", import.meta.url);
 const AGENTS_URL = new URL("../exercises/AGENTS.md", import.meta.url);
-const AGENTS_HASH = "agents";
+const REVIEWS_URL = new URL("../exercises/REVIEWS.md", import.meta.url);
+const LIBRARY_HASH = "library";
+const LIBRARY_TABS = {
+  reviews: {
+    label: "All Reviews",
+    path: "exercises/REVIEWS.md",
+    url: REVIEWS_URL,
+  },
+  agents: {
+    label: "All Agents",
+    path: "exercises/AGENTS.md",
+    url: AGENTS_URL,
+  },
+};
 const VIEWPORT_KEY = "solis-review-viewport";
 const REVIEW_W_KEY = "solis-review-width";
 const REVIEW_W_DEFAULT = 420;
@@ -39,8 +52,12 @@ const els = {
   viewportTabs: document.getElementById("viewport-tabs"),
   viewportSize: document.getElementById("viewport-size"),
   splitter: document.getElementById("review-splitter"),
-  openAgents: document.getElementById("open-agents"),
-  openAgentsSide: document.getElementById("open-agents-side"),
+  openLibrary: document.getElementById("open-library"),
+  openLibrarySide: document.getElementById("open-library-side"),
+  fileBar: document.getElementById("file-bar"),
+  libraryBar: document.getElementById("library-bar"),
+  libraryTabs: document.getElementById("library-tabs"),
+  libraryOpenTab: document.getElementById("library-open-tab"),
 };
 
 marked.setOptions({
@@ -52,19 +69,41 @@ let exercises = [];
 let currentId = null;
 let currentFiles = [];
 let currentFile = null;
+let libraryTab = "reviews";
 let viewport = normalizeViewport(localStorage.getItem(VIEWPORT_KEY));
 
 function normalizeViewport(value) {
   return VIEWPORTS[value] ? value : "desktop";
 }
 
-function parseHash() {
-  const raw = location.hash.replace(/^#\/?/, "").trim();
-  return raw || null;
+function normalizeLibraryTab(value) {
+  return LIBRARY_TABS[value] ? value : "reviews";
 }
 
-function setHash(id) {
+function parseHash() {
+  const raw = location.hash.replace(/^#\/?/, "").trim();
+  if (!raw) return { kind: "empty" };
+
+  if (raw === "agents" || raw === "library/agents") {
+    return { kind: "library", tab: "agents" };
+  }
+  if (raw === "reviews" || raw === "library" || raw === "library/reviews") {
+    return { kind: "library", tab: "reviews" };
+  }
+  if (raw.startsWith("library/")) {
+    return { kind: "library", tab: normalizeLibraryTab(raw.slice("library/".length)) };
+  }
+
+  return { kind: "exercise", id: raw };
+}
+
+function setExerciseHash(id) {
   const next = `#/${id}`;
+  if (location.hash !== next) location.hash = next;
+}
+
+function setLibraryHash(tab) {
+  const next = `#/${LIBRARY_HASH}/${normalizeLibraryTab(tab)}`;
   if (location.hash !== next) location.hash = next;
 }
 
@@ -375,59 +414,87 @@ function clearNavCurrent() {
   });
 }
 
-function markAgentsNav(active) {
-  [els.openAgents, els.openAgentsSide].forEach((link) => {
+function markLibraryNav(active) {
+  [els.openLibrary, els.openLibrarySide].forEach((link) => {
     if (!link) return;
     link.setAttribute("aria-current", active ? "page" : "false");
   });
 }
 
-async function openAgentsBundle({ pushHash = true } = {}) {
-  currentId = AGENTS_HASH;
-  currentFiles = [];
-  currentFile = null;
-  if (pushHash) setHash(AGENTS_HASH);
+function syncLibraryTabs() {
+  if (!els.libraryTabs) return;
+  els.libraryTabs.querySelectorAll("button[data-library]").forEach((btn) => {
+    btn.setAttribute(
+      "aria-selected",
+      btn.dataset.library === libraryTab ? "true" : "false",
+    );
+  });
+}
 
-  clearNavCurrent();
-  markAgentsNav(true);
-  els.app.classList.add("agents-mode");
+function enterLibraryMode() {
+  els.app.classList.add("library-mode");
+  if (els.fileBar) els.fileBar.hidden = true;
+  if (els.libraryBar) els.libraryBar.hidden = false;
+}
 
-  els.stageTitle.textContent = "All agent prompts";
-  els.stagePath.textContent = "exercises/AGENTS.md";
-  els.openTab.href = AGENTS_URL.href;
+function exitLibraryMode() {
+  els.app.classList.remove("library-mode");
+  if (els.fileBar) els.fileBar.hidden = false;
+  if (els.libraryBar) els.libraryBar.hidden = true;
+  markLibraryNav(false);
+}
+
+async function loadLibraryDocument(tab) {
+  const meta = LIBRARY_TABS[normalizeLibraryTab(tab)];
+  els.stageTitle.textContent = meta.label;
+  els.stagePath.textContent = meta.path;
+  els.openTab.href = meta.url.href;
+  if (els.libraryOpenTab) els.libraryOpenTab.href = meta.url.href;
   els.frame.removeAttribute("src");
   els.fileList.innerHTML = "";
   els.sourceBody.className = "source-body loading";
   els.sourceBody.textContent = "Loading…";
 
   try {
-    const res = await fetch(AGENTS_URL, { cache: "no-store" });
+    const res = await fetch(meta.url, { cache: "no-store" });
     if (!res.ok) throw new Error(`${res.status}`);
     const text = await res.text();
     els.sourceBody.className = "source-body md";
     els.sourceBody.innerHTML = marked.parse(text);
+    if (tab === "reviews") {
+      decoratePriRows(els.sourceBody);
+      formatReviewTableCells(els.sourceBody);
+    }
     enhanceCopyableCodeBlocks(els.sourceBody);
   } catch (err) {
     els.sourceBody.className = "source-body error";
-    els.sourceBody.textContent = "Could not open exercises/AGENTS.md.";
+    els.sourceBody.textContent = `Could not open ${meta.path}.`;
     console.error(err);
   }
 }
 
-function selectExercise(id, { pushHash = true } = {}) {
-  if (id === AGENTS_HASH) {
-    void openAgentsBundle({ pushHash });
-    return;
-  }
+async function openLibrary({ tab = "reviews", pushHash = true } = {}) {
+  libraryTab = normalizeLibraryTab(tab);
+  currentId = `${LIBRARY_HASH}/${libraryTab}`;
+  currentFiles = [];
+  currentFile = null;
+  if (pushHash) setLibraryHash(libraryTab);
 
+  clearNavCurrent();
+  markLibraryNav(true);
+  enterLibraryMode();
+  syncLibraryTabs();
+  await loadLibraryDocument(libraryTab);
+}
+
+function selectExercise(id, { pushHash = true } = {}) {
   const exercise = exercises.find((item) => item.id === id) || exercises[0];
   if (!exercise) return;
 
   currentId = exercise.id;
-  if (pushHash) setHash(exercise.id);
+  if (pushHash) setExerciseHash(exercise.id);
 
-  els.app.classList.remove("agents-mode");
-  markAgentsNav(false);
+  exitLibraryMode();
 
   els.nav.querySelectorAll("a").forEach((a) => {
     a.setAttribute(
@@ -492,14 +559,23 @@ els.viewportTabs.addEventListener("click", (event) => {
   setViewport(btn.dataset.viewport);
 });
 
+els.libraryTabs?.addEventListener("click", (event) => {
+  const btn = event.target.closest("button[data-library]");
+  if (!btn) return;
+  void openLibrary({ tab: btn.dataset.library });
+});
+
 window.addEventListener("hashchange", () => {
-  const id = parseHash();
-  if (!id || id === currentId) return;
-  if (id === AGENTS_HASH) {
-    void openAgentsBundle({ pushHash: false });
+  const route = parseHash();
+  if (route.kind === "library") {
+    const nextId = `${LIBRARY_HASH}/${route.tab}`;
+    if (nextId === currentId) return;
+    void openLibrary({ tab: route.tab, pushHash: false });
     return;
   }
-  selectExercise(id, { pushHash: false });
+  if (route.kind === "exercise" && route.id !== currentId) {
+    selectExercise(route.id, { pushHash: false });
+  }
 });
 
 async function boot() {
@@ -509,15 +585,17 @@ async function boot() {
   setupFileList();
   await refreshExercises();
 
-  const fromHash = parseHash();
-  if (fromHash === AGENTS_HASH) {
-    await openAgentsBundle({ pushHash: false });
+  const route = parseHash();
+  if (route.kind === "library") {
+    await openLibrary({ tab: route.tab, pushHash: false });
     return;
   }
 
   const start =
-    exercises.find((item) => item.id === fromHash)?.id || exercises[0]?.id;
-  if (start) selectExercise(start, { pushHash: !fromHash });
+    (route.kind === "exercise" &&
+      exercises.find((item) => item.id === route.id)?.id) ||
+    exercises[0]?.id;
+  if (start) selectExercise(start, { pushHash: route.kind === "empty" });
 }
 
 boot().catch((err) => {
