@@ -84,6 +84,11 @@ button {
   background: var(--panel);
 }
 
+/* Author `display` beats the UA `[hidden]` rule; keep the attribute working. */
+.panel-bar[hidden] {
+  display: none;
+}
+
 .panel-label {
   font-size: 0.72rem;
   font-weight: 600;
